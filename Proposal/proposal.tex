@@ -107,7 +107,7 @@ $$\mathop{\arg\max}_{\theta_G}(Prob(E(G(x; theta_G))=x))$$
 
 目前估计图片的大小为256 x 256，数量在3000以上。
 
-\section{挑战和基线}
+\section{挑战和参考工作}
 
 \subsection{挑战}
 \begin{itemize}
@@ -117,14 +117,14 @@ $$\mathop{\arg\max}_{\theta_G}(Prob(E(G(x; theta_G))=x))$$
 	\item 融合不同的神经网络架构，打造一个本程序专用的神经网络。
 \end{itemize}
 
-\subsection{基线}
+\subsection{参考工作}
 
 \begin{itemize}
 
-\item 基线1.
+\item 参考工作1.
 Nvidia的SPADE项目构建了一个程序，可以根据景物轮廓绘出风景图像，与本项目有类似之处，但是它使用了不同的原理。Nvidia的工作构造了一个称为GauGAN的网络，在COCO-Stuff, Cityscapes 和 ADE20K 数据集上学习了图像语义分割，再由特定类别的图像语义生成图像。但是考虑到本项目不会涉及到非常多的语义分割的部分，且SPADE项目的规模要大的多，因而参考意义有限。
-\item 基线2.
-
+\item 参考工作2.
+Google在《A deep-learning photographer capable of creating professional work》中的工作可以根据一张街景照片，生成一张专业级摄影照片。其中的一些技术可以参考，但是主要的流程和目的与本项目不相符。
 \end{itemize}
 
 \section{研究计划}
@@ -142,4 +142,10 @@ Nvidia的SPADE项目构建了一个程序，可以根据景物轮廓绘出风景
 
 \section{可行性}
 本项目使用到的主要方法为一些十分成熟的神经网络架构，主要难点在于将他们进行融合，并设计本项目专用的网络，因为既能保证可行性，又有创新点。在计算规模上，我们尽量将图片的大小控制在可以在单个GPU上训练的规模。
+
+\section{参考文献}
+[1] Taesung Park, Ming-Yu Liu, Ting-Chun Wang, and Jun-Yan Zhu.
+"Semantic Image Synthesis with Spatially-Adaptive Normalization", in CVPR, 2019.
+
+[2] Fang, H., & Zhang, M. (2017). Creatism: A deep-learning photographer capable of creating professional work. ArXiv, abs/1707.03491.
 \end{document}
