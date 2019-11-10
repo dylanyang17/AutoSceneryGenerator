@@ -15,7 +15,7 @@
      \usepackage[final]{proposal}
 
 % to avoid loading the natbib package, add option nonatbib:
-%     \usepackage[nonatbib]{neurips_2018}
+% \usepackage[nonatbib]{proposal}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -27,6 +27,7 @@
 \usepackage{microtype}      % microtypography
 \usepackage{fontspec, xunicode, xltxtra} 
 \setmainfont{Microsoft YaHei} 
+\setmainfont{Times New Roman}
 \usepackage{ctex}
 
 
@@ -65,14 +66,38 @@
 
 
 
-
 \section{任务定义}
 
 本课题希望构建一个神经网络以及一些简单的界面，可以根据用户提供的一些特征的比例，自动生成一张风景图片。程序界面示意图如下。
 
+\begin{figure}[ht]
+	\centering
+	\includegraphics[scale=0.1]{res/sketch.png}
+	\caption{A Simple Sketch.}
+\end{figure}
+
 用户通过滑动滑条，确定例如树木、山、水、天空等要素在图片中的占比，并可以设定希望使用的主题颜色，程序便生成一张符合以上要求的风景图片。用户可以设置随机种子来获得不同的图片。
 
 用数学语言形式化程序的任务即为：
+
+令 $pic$ 是一张图片，$label_{pic}$ 是图片的标签，值为 $real$ 或 $generated$ ，表示是真实的或者生成的。需要构建一个辨别器 $D$ ，参数是 $\theta_D$，$D(pic; \theta_D)$ 输出一个标签，表示辨别器认为 $pic$ 是否是生成的。训练目标为：
+
+$$\mathop{\arg\max}_{\theta_D}(Prob(D(pic; \theta_D)=label_{pic}))$$
+
+即$D$能给出正确的标签。
+
+再构建生成器$G$，参数是$\theta_G$，对于一个特征向量$x$，$G(x; \theta_G)$输出一张图片。训练目标为：
+
+$$\arg\min_{\theta_G}(Prob(D(G(x; \theta_G); \theta_D)=generated))$$
+
+即$G$的输出应足够逼真，以至于$D$不能分辨图片是否是生成的。
+
+同时为了让$G$能正确地展现$x$的特征，还需要一个编码器$E$，$E(pic)$输出图片对应的特征向量。$E$的训练就是AutoEncoder的$Encoder$的训练，而$decoder$的部分就是前面的$G$。当$E$是一个理想编码器的时候，$G$的训练目标还要包括:
+
+$$\mathop{\arg\max}_{\theta_G}(Prob(E(G(x; theta_G))=x))$$
+
+即对$G$在$x$上生成的图片进行编码的话，还能得到$x$，这表示生成的图片确实含有$x$的特征。
+
 
 \section{数据集}
 
