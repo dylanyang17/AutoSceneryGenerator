@@ -78,6 +78,10 @@
 
 用于训练的数据集可以是从各大图片社交平台（如 Pinterest 、Flicker）上下载获得的风景图片。
 
+有一些现存的数据集可以使用，但是需要剔除一些内容，包括MIT的Computational Visual Cognition Laboratory，Github上的ml5-data-and-models，MIT Computer Science and Artificial Intelligence Laboratory提供的places数据集等。
+
+目前估计图片的大小为256 x 256，数量在3000以上。
+
 \section{挑战和基线}
 
 \subsection{挑战}
@@ -93,7 +97,7 @@
 \begin{itemize}
 
 \item 基线1.
-Nvidia的SPADE项目构建了一个程序，可以根据景物轮廓绘出风景图像，与本项目有类似之处，但是它使用了不同的原理。Nvidia的工作构造了一个称为GauGAN的网络，在COCO-Stuff, Cityscapes 和 ADE20K 数据集上学习了图像语义分割，再由特定类别的图像语义生成图像。
+Nvidia的SPADE项目构建了一个程序，可以根据景物轮廓绘出风景图像，与本项目有类似之处，但是它使用了不同的原理。Nvidia的工作构造了一个称为GauGAN的网络，在COCO-Stuff, Cityscapes 和 ADE20K 数据集上学习了图像语义分割，再由特定类别的图像语义生成图像。但是考虑到本项目不会涉及到非常多的语义分割的部分，且SPADE项目的规模要大的多，因而参考意义有限。
 \item 基线2.
 
 \end{itemize}
@@ -102,7 +106,9 @@ Nvidia的SPADE项目构建了一个程序，可以根据景物轮廓绘出风景
 
 \begin{enumerate}
 	\item 收集训练数据
+	计划使用手动（打包下载）或者自动（爬虫）的方法，在一些图片平台上获取与风景相关的图片数据。
 	\item 清洗数据
+	对各种图片，删去一些不相关的内容，调整为统一大小，统一格式。
 	\item 构建基于CNN、GAN、AutoEncoder的神经网络
 	\item 构建GUI
 	\item 训练
