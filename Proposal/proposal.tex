@@ -1,0 +1,117 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2018
+
+% ready for submission
+% \usepackage{neurips_2018}
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2018}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+     \usepackage[final]{proposal}
+
+% to avoid loading the natbib package, add option nonatbib:
+%     \usepackage[nonatbib]{neurips_2018}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{fontspec, xunicode, xltxtra} 
+\setmainfont{Microsoft YaHei} 
+\usepackage{ctex}
+
+
+\title{《人工神经网络》大作业开题报告}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+\author{
+  陶天骅\\
+  计算机科学与技术系 \\
+  清华大学 \\
+  \texttt{@mails.tsinghua.edu.cn} \\
+  %% examples of more authors
+  \AND
+  杨雅儒\\
+  计算机科学与技术系 \\
+  清华大学 \\
+  \texttt{yangyr17@mails.tinghua.edu.cn} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+}
+
+\begin{document}
+% \nipsfinalcopy is no longer used
+
+\maketitle
+
+
+
+
+\section{任务定义}
+
+本课题希望构建一个神经网络以及一些简单的界面，可以根据用户提供的一些特征的比例，自动生成一张风景图片。程序界面示意图如下。
+
+用户通过滑动滑条，确定例如树木、山、水、天空等要素在图片中的占比，并可以设定希望使用的主题颜色，程序便生成一张符合以上要求的风景图片。用户可以设置随机种子来获得不同的图片。
+
+用数学语言形式化程序的任务即为：
+
+\section{数据集}
+
+用于训练的数据集可以是从各大图片社交平台（如 Pinterest 、Flicker）上下载获得的风景图片。
+
+\section{挑战和基线}
+
+\subsection{挑战}
+\begin{itemize}
+	\item 确定使用哪些特征作为输入标签。
+	\item 将特征和主题颜色向量化。
+	\item 考虑到算力有限，可能无法生成分辨率较高的图片。
+	\item 融合不同的神经网络架构，打造一个本程序专用的神经网络。
+\end{itemize}
+
+\subsection{基线}
+
+你可以调研和你的工作相关的文献，并选择一些基线。列举的时候可以采取下述两种方式：（也可以采取其他的，这里仅作示例）
+
+
+\begin{itemize}
+
+\item 基线1.
+
+\item 基线2.
+
+\end{itemize}
+
+\section{研究计划}
+
+\begin{enumerate}
+	\item 收集训练数据
+	\item 清洗数据
+	\item 构建基于CNN、GAN、AutoEncoder的神经网络
+	\item 构建GUI
+	\item 训练
+	\item 测试
+\end{enumerate}
+
+\section{可行性}
+
+\end{document}
