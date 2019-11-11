@@ -139,8 +139,14 @@ Google在《A deep-learning photographer capable of creating professional work�
   
   对各种图片，删去一些不相关的内容，调整为统一大小，统一格式。
 	\item 构建基于CNN、GAN、AutoEncoder的神经网络
+  
+  网络主要含两部分，一部分是GAN的部分，目标是使图片显得真实。另一部分是Encoder的部分，目的是体现出特征向量中的特征。CNN集成在两部分网络中间。
 	\item 构建GUI
+  
+  可以使用Python Tkinter或者Qt等框架构建简单的GUI程序。
 	\item 训练
+  
+  目前的训练设备有1个RTX 2080Ti GPU。在训练的时候不断调整网络架构和参数。
 	\item 测试
 \end{enumerate}
 
