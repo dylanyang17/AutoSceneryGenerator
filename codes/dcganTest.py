@@ -24,14 +24,14 @@ is_training = tf.placeholder(tf.bool)
 
 def leakyrelu(x, alpha=0.2):
     return 0.5 * (1 + alpha) * x + 0.5 * (1 - alpha) * abs(x)
+
+
 def generator(x, reuse=False):
     with tf.variable_scope('Generator', reuse=reuse):
         x = tf.layers.dense(x, units=16 * 16 * 256)
         x = tf.layers.batch_normalization(x, training=is_training)
         x = tf.nn.relu(x)
-
         x = tf.reshape(x, shape=[-1, 16, 16, 256])
-
         x = tf.layers.conv2d_transpose(x, 128, 5, strides=2, padding='same')
         x = tf.layers.batch_normalization(x, training=is_training)
         x = tf.nn.relu(x)
@@ -44,9 +44,10 @@ def generator(x, reuse=False):
         x = tf.nn.tanh(x)
         print(x.shape)
         return x
+
+
 def discriminator(x, reuse=False):
     with tf.variable_scope('Discriminator', reuse=reuse):
-
         x = tf.layers.conv2d(x, 64, 5, strides=2, padding='same')
         x = tf.layers.batch_normalization(x, training=is_training)
         x = leakyrelu(x)
@@ -57,13 +58,13 @@ def discriminator(x, reuse=False):
         x = tf.layers.dense(x, 1024)
         x = tf.layers.batch_normalization(x, training=is_training)
         x = leakyrelu(x)
-        x= tf.layers.dense(x, 2)
+        x = tf.layers.dense(x, 2)
     return x
+
+
 gen_sample = generator(noise_input)
 disc_real = discriminator(real_image_input)
 disc_fake = discriminator(gen_sample, reuse=True)
-
-
 stacked_gan = discriminator(gen_sample, reuse=True)
 
 disc_loss_real = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
@@ -118,7 +119,6 @@ else:
 st, ed, times = 0, batch_size, 0
 for i in range(1, num_steps+1):
 
-    
     if(ed >= 5780):
         st, ed, times = 0, batch_size, 0
     batch_x = data[st:ed]
