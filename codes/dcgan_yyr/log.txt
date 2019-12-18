@@ -1,0 +1,5 @@
+12-19 04:49:44:: epoch: 0  time_cost: 25 [D loss: 10.403837  acc: 0.109375] [G loss: 4.214664]
+12-19 04:49:44:: save model, epoch: 0
+12-19 04:50:55:: epoch: 0  time_cost: 24 [D loss: 11.449949  acc: 0.078125] [G loss: 13.736245]
+12-19 04:50:55:: save model, epoch: 0
+12-19 04:50:57:: save images, epoch: 0
