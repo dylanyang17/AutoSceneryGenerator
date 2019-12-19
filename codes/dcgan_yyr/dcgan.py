@@ -10,7 +10,7 @@ train_dir = './train'
 
 def debug(s):
     # 输出字符串, 并且追加打印到log.txt中
-    timestamp = datetime.datetime.now().strftime('%m-%d %H:%M:%S:: ')
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S:: ')
     print(timestamp + s)
     with open(file=log_path, mode='a') as f:
         print(timestamp + s, file=f)
@@ -18,7 +18,7 @@ def debug(s):
 
 class DCGAN():
     def __init__(self):
-        self.lr = 0.001  # learning rate
+        self.lr = 0.002  # learning rate
         self.bn_momentum = 0.8
         self.channels = 3
         self.img_shape = (128, 128, self.channels)
@@ -26,15 +26,17 @@ class DCGAN():
         self.loss_func = 'binary_crossentropy'
         self.data_path = '../data128/pics.npy'
 
-        self.discriminator = self.build_discriminator()
+        self.base_discriminator = self.build_discriminator()
+        self.generator = self.build_generator()
+        self.discriminator = keras.models.Model(self.base_discriminator.inputs, self.base_discriminator.outputs)
         self.discriminator.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.lr),
                                    metrics=['accuracy'])
-        self.generator = self.build_generator()
+        self.discriminator_frozen = keras.models.Model(self.base_discriminator.inputs, self.base_discriminator.outputs)
+        self.discriminator_frozen.trainable = False
 
         z = keras.layers.Input(shape=self.noise_shape)
         img = self.generator(z)
-        self.discriminator.trainable = False
-        score = self.discriminator(img)
+        score = self.discriminator_frozen(img)
         self.combined = keras.models.Model(z, score)
         self.combined.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.lr))
 
@@ -61,7 +63,7 @@ class DCGAN():
         model.add(keras.layers.LeakyReLU())
         # model.add(keras.layers.Dropout(0.25))
         model.add(keras.layers.Flatten())
-        model.add(keras.layers.Dense(1, activation='tanh'))
+        model.add(keras.layers.Dense(1, activation='sigmoid'))
 
         img = keras.layers.Input(shape=self.img_shape)
         score = model(img)
@@ -96,10 +98,11 @@ class DCGAN():
         img = model(z)
         return keras.models.Model(z, img)
 
-    def train(self, start_epoch, end_epoch, batch_size, save_interval):
+    def train(self, start_epoch, end_epoch, batch_size, save_interval, d_train_times):
         """
         进行训练，训练的起始轮数为 start_epoch，终止轮数为 end_epoch（闭区间），
-        每一轮选出 batch_size 张图片，每隔 save_interval 轮进行一次保存
+        每一轮选出 batch_size 张图片，每隔 save_interval 轮进行一次保存，注意每一轮中 discriminator 训练 d_train_times 次,
+        而 generator 训练 1 次
         """
         # data 的形状: (number of images, 128, 128, 3)，注意将其变换到 [-1, 1] 上
         data = np.load(self.data_path)
@@ -110,22 +113,26 @@ class DCGAN():
         g_loss_list = []
         for epoch in range(start_epoch + 1, end_epoch + 1):
             start_time = datetime.datetime.now()
-            # Train Discriminator
-            idx = np.random.randint(0, data.shape[0], batch_size)
-            real_imgs = data[idx]
-            z = np.random.normal(0, 1, size=(batch_size,)+self.noise_shape)
-            fake_imgs = self.generator.predict(z)
-            d_loss_real = self.discriminator.train_on_batch(real_imgs, real)
-            d_loss_fake = self.discriminator.train_on_batch(fake_imgs, fake)
-            d_loss = 0.5 * np.add(d_loss_fake, d_loss_real)
-            d_loss_list.append(d_loss)
+            debug('training on epoch ' + str(epoch))
+            for i in range(d_train_times):
+                # Train Discriminator
+                idx = np.random.randint(0, data.shape[0], batch_size)
+                real_imgs = data[idx]
+                z = np.random.normal(0, 1, size=(batch_size,)+self.noise_shape)
+                fake_imgs = self.generator.predict(z)
+                d_loss_real = self.discriminator.train_on_batch(real_imgs, real)
+                d_loss_fake = self.discriminator.train_on_batch(fake_imgs, fake)
+                d_loss = 0.5 * np.add(d_loss_fake, d_loss_real)
+                debug('d_train iteration: %d  d_loss: %f  d_acc: %f' % (i, d_loss[0], d_loss[1]))
+                d_loss_list.append(d_loss)
 
             # Train Generator
+            z = np.random.normal(0, 1, size=(batch_size,) + self.noise_shape)
             g_loss = self.combined.train_on_batch(z, real)
             g_loss_list.append(g_loss)
             time_cost = (datetime.datetime.now()-start_time).total_seconds()
-            debug('epoch: %d  time_cost: %d [D loss: %f  acc: %f] [G loss: %f]' %
-                  (epoch, time_cost, d_loss[0], d_loss[1], g_loss))
+            debug('finish epoch %d  time_cost: %d  g_loss: %f]' %
+                  (epoch, time_cost, g_loss))
 
             # Save
             if epoch % save_interval == 0:
@@ -147,7 +154,7 @@ class DCGAN():
         fake_imgs = self.generator.predict(noise)
 
         # 变换到 [0, 255] 上
-        fake_imgs = int(np.round((fake_imgs + 1) / 2 * 255))
+        fake_imgs = np.round((fake_imgs + 1) / 2 * 255).astype('uint8')
 
         fig, axs = plt.subplots(r, c)
         cnt = 0
@@ -171,9 +178,9 @@ class DCGAN():
         save_dir = os.path.join(train_dir, 'epoch' + str(epoch))
         os.makedirs(save_dir, exist_ok=True)
 
-        self.combined.save(os.path.join(save_dir, 'combined'))
+        # self.combined.save(os.path.join(save_dir, 'combined'))
         self.generator.save(os.path.join(save_dir, 'generator'))
-        self.discriminator.save(os.path.join(save_dir, 'discriminator'))
+        self.base_discriminator.save(os.path.join(save_dir, 'base_discriminator'))
 
     def load_model(self, epoch):
         """
@@ -183,10 +190,20 @@ class DCGAN():
         """
         debug('load model, epoch: %d' % epoch)
         save_dir = os.path.join(train_dir, 'epoch' + str(epoch))
-        self.combined = keras.models.load_model(os.path.join(save_dir, 'combined'))
+        # self.combined = keras.models.load_model(os.path.join(save_dir, 'combined'))
         self.generator = keras.models.load_model(os.path.join(save_dir, 'generator'))
-        self.discriminator = keras.models.load_model(os.path.join(save_dir, 'discriminator'))
+        self.base_discriminator = keras.models.load_model(os.path.join(save_dir, 'base_discriminator'))
+        self.discriminator = keras.models.Model(self.base_discriminator.inputs, self.base_discriminator.outputs)
+        self.discriminator.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.lr),
+                                   metrics=['accuracy'])
+        self.discriminator_frozen = keras.models.Model(self.base_discriminator.inputs, self.base_discriminator.outputs)
+        self.discriminator_frozen.trainable = False
 
+        z = keras.layers.Input(shape=self.noise_shape)
+        img = self.generator(z)
+        score = self.discriminator_frozen(img)
+        self.combined = keras.models.Model(z, score)
+        self.combined.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.lr))
 
 def filter_save_dir(s):
     """
@@ -215,4 +232,4 @@ if __name__ == '__main__':
     start_epoch = get_last_epoch()
     if start_epoch != -1:
         dcgan.load_model(start_epoch)
-    dcgan.train(start_epoch=start_epoch, end_epoch=10, batch_size=32, save_interval=5)
+    dcgan.train(start_epoch=start_epoch, end_epoch=100, batch_size=64, save_interval=5, d_train_times=1)
