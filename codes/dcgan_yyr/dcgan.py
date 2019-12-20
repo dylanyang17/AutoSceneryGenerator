@@ -19,7 +19,7 @@ def debug(s):
 
 class DCGAN():
     def __init__(self):
-        self.lr = 0.002  # learning rate
+        self.lr = 0.0005  # learning rate
         self.bn_momentum = 0.8
         self.channels = 3
         self.img_shape = (128, 128, self.channels)

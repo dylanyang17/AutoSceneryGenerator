@@ -905,3 +905,122 @@
 2019-12-20 10:06:45:: training on epoch 0
 2019-12-20 10:10:17:: d_train iteration: 0  d_loss: 8.582337  d_acc: 0.140625
 2019-12-20 10:27:29:: training on epoch 0
+2019-12-20 14:14:25:: load model, epoch: 60
+2019-12-20 14:15:03:: training on epoch 0
+2019-12-20 14:15:21:: d_train iteration: 0  d_loss: 8.210919  d_acc: 0.375000
+2019-12-20 14:15:38:: finish epoch 0  time_cost: 34  g_loss: 0.000000]
+2019-12-20 14:15:38:: save model, epoch: 0
+2019-12-20 14:15:38:: save images, epoch: 0
+2019-12-20 14:15:41:: training on epoch 1
+2019-12-20 14:15:52:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:16:03:: finish epoch 1  time_cost: 21  g_loss: 0.000000]
+2019-12-20 14:16:03:: training on epoch 2
+2019-12-20 14:16:14:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:16:29:: finish epoch 2  time_cost: 26  g_loss: 0.000000]
+2019-12-20 14:16:29:: training on epoch 3
+2019-12-20 14:16:50:: training on epoch 0
+2019-12-20 14:17:08:: d_train iteration: 0  d_loss: 7.844231  d_acc: 0.351562
+2019-12-20 14:17:43:: finish epoch 0  time_cost: 53  g_loss: 0.520490]
+2019-12-20 14:17:43:: save model, epoch: 0
+2019-12-20 14:17:44:: save images, epoch: 0
+2019-12-20 14:17:46:: training on epoch 1
+2019-12-20 14:18:01:: d_train iteration: 0  d_loss: 7.978806  d_acc: 0.492188
+2019-12-20 14:18:25:: finish epoch 1  time_cost: 38  g_loss: 0.000000]
+2019-12-20 14:18:25:: training on epoch 2
+2019-12-20 14:18:37:: d_train iteration: 0  d_loss: 7.986039  d_acc: 0.492188
+2019-12-20 14:19:18:: training on epoch 0
+2019-12-20 14:19:41:: d_train iteration: 0  d_loss: 8.340853  d_acc: 0.273438
+2019-12-20 14:20:14:: finish epoch 0  time_cost: 55  g_loss: 0.000000]
+2019-12-20 14:20:14:: save model, epoch: 0
+2019-12-20 14:20:15:: save images, epoch: 0
+2019-12-20 14:20:17:: training on epoch 1
+2019-12-20 14:20:33:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:21:01:: finish epoch 1  time_cost: 43  g_loss: 0.000000]
+2019-12-20 14:21:01:: training on epoch 2
+2019-12-20 14:21:17:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:21:44:: finish epoch 2  time_cost: 43  g_loss: 0.000000]
+2019-12-20 14:21:44:: training on epoch 3
+2019-12-20 14:22:00:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:22:28:: finish epoch 3  time_cost: 44  g_loss: 0.000000]
+2019-12-20 14:22:28:: training on epoch 4
+2019-12-20 14:22:44:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:23:12:: finish epoch 4  time_cost: 43  g_loss: 0.000000]
+2019-12-20 14:23:12:: training on epoch 5
+2019-12-20 14:23:27:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:23:54:: finish epoch 5  time_cost: 42  g_loss: 0.000000]
+2019-12-20 14:23:54:: save model, epoch: 5
+2019-12-20 14:23:54:: save images, epoch: 5
+2019-12-20 14:23:57:: training on epoch 6
+2019-12-20 14:24:13:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:24:41:: finish epoch 6  time_cost: 43  g_loss: 0.000000]
+2019-12-20 14:24:41:: training on epoch 7
+2019-12-20 14:24:57:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:25:24:: finish epoch 7  time_cost: 43  g_loss: 0.000000]
+2019-12-20 14:25:24:: training on epoch 8
+2019-12-20 14:25:40:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:26:07:: finish epoch 8  time_cost: 43  g_loss: 0.000000]
+2019-12-20 14:26:07:: training on epoch 9
+2019-12-20 14:26:23:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:26:51:: finish epoch 9  time_cost: 43  g_loss: 0.000000]
+2019-12-20 14:26:51:: training on epoch 10
+2019-12-20 14:27:10:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:27:42:: finish epoch 10  time_cost: 51  g_loss: 0.000000]
+2019-12-20 14:27:42:: save model, epoch: 10
+2019-12-20 14:27:42:: save images, epoch: 10
+2019-12-20 14:27:45:: training on epoch 11
+2019-12-20 14:28:04:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:28:36:: finish epoch 11  time_cost: 50  g_loss: 0.000000]
+2019-12-20 14:28:36:: training on epoch 12
+2019-12-20 14:28:53:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:29:22:: finish epoch 12  time_cost: 46  g_loss: 0.000000]
+2019-12-20 14:29:22:: training on epoch 13
+2019-12-20 14:29:39:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:30:08:: finish epoch 13  time_cost: 45  g_loss: 0.000000]
+2019-12-20 14:30:08:: training on epoch 14
+2019-12-20 14:30:25:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:30:55:: finish epoch 14  time_cost: 47  g_loss: 0.000000]
+2019-12-20 14:30:55:: training on epoch 15
+2019-12-20 14:31:11:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:31:43:: finish epoch 15  time_cost: 48  g_loss: 0.000000]
+2019-12-20 14:31:43:: save model, epoch: 15
+2019-12-20 14:31:44:: save images, epoch: 15
+2019-12-20 14:31:47:: training on epoch 16
+2019-12-20 14:32:06:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:32:39:: finish epoch 16  time_cost: 51  g_loss: 0.000000]
+2019-12-20 14:32:39:: training on epoch 17
+2019-12-20 14:32:57:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:33:30:: finish epoch 17  time_cost: 51  g_loss: 0.000000]
+2019-12-20 14:33:30:: training on epoch 18
+2019-12-20 14:33:48:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:34:21:: finish epoch 18  time_cost: 51  g_loss: 0.000000]
+2019-12-20 14:34:21:: training on epoch 19
+2019-12-20 14:34:40:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:35:13:: finish epoch 19  time_cost: 51  g_loss: 0.000000]
+2019-12-20 14:35:13:: training on epoch 20
+2019-12-20 14:35:31:: d_train iteration: 0  d_loss: 7.971192  d_acc: 0.500000
+2019-12-20 14:36:05:: finish epoch 20  time_cost: 51  g_loss: 0.000000]
+2019-12-20 14:36:05:: save model, epoch: 20
+2019-12-20 14:36:05:: save images, epoch: 20
+2019-12-20 14:37:08:: training on epoch 0
+2019-12-20 14:37:31:: d_train iteration: 0  d_loss: 6.532185  d_acc: 0.312500
+2019-12-20 14:37:50:: finish epoch 0  time_cost: 41  g_loss: 0.106999]
+2019-12-20 14:37:50:: save model, epoch: 0
+2019-12-20 14:37:50:: save images, epoch: 0
+2019-12-20 14:37:53:: training on epoch 1
+2019-12-20 14:38:08:: d_train iteration: 0  d_loss: 0.809539  d_acc: 0.640625
+2019-12-20 14:38:22:: finish epoch 1  time_cost: 29  g_loss: 10.796125]
+2019-12-20 14:38:22:: training on epoch 2
+2019-12-20 14:38:37:: d_train iteration: 0  d_loss: 0.457812  d_acc: 0.867188
+2019-12-20 14:38:50:: finish epoch 2  time_cost: 28  g_loss: 10.953898]
+2019-12-20 14:38:50:: training on epoch 3
+2019-12-20 14:39:06:: d_train iteration: 0  d_loss: 2.077608  d_acc: 0.468750
+2019-12-20 14:39:19:: finish epoch 3  time_cost: 28  g_loss: 10.146368]
+2019-12-20 14:39:19:: training on epoch 4
+2019-12-20 14:39:34:: d_train iteration: 0  d_loss: 1.730561  d_acc: 0.781250
+2019-12-20 14:39:47:: finish epoch 4  time_cost: 28  g_loss: 15.514255]
+2019-12-20 14:39:47:: training on epoch 5
+2019-12-20 14:40:07:: d_train iteration: 0  d_loss: 1.638199  d_acc: 0.750000
+2019-12-20 14:40:22:: finish epoch 5  time_cost: 35  g_loss: 9.472952]
+2019-12-20 14:40:22:: save model, epoch: 5
+2019-12-20 14:40:23:: save images, epoch: 5
+2019-12-20 14:40:25:: training on epoch 6
