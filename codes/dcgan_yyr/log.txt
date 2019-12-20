@@ -902,3 +902,6 @@
 2019-12-19 19:17:58:: save model, epoch: 100
 2019-12-19 19:17:58:: save images, epoch: 100
 2019-12-20 10:02:03:: training on epoch 0
+2019-12-20 10:06:45:: training on epoch 0
+2019-12-20 10:10:17:: d_train iteration: 0  d_loss: 8.582337  d_acc: 0.140625
+2019-12-20 10:27:29:: training on epoch 0

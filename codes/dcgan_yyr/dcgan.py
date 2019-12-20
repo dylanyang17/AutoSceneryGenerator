@@ -95,8 +95,6 @@ class DCGAN():
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Deconv2D(filters=self.channels, kernel_size=4, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
-        model.add(keras.layers.Flatten())
-        model.add(keras.layers.Dense(reduce(lambda x, y: x * y, self.img_shape)))
         model.add(keras.layers.Activation('tanh'))
         model.add(keras.layers.Reshape(self.img_shape))
 
