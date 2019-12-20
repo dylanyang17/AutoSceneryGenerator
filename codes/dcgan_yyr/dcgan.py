@@ -19,7 +19,8 @@ def debug(s):
 
 class DCGAN():
     def __init__(self):
-        self.lr = 0.0005  # learning rate
+        self.d_lr = 0.0001  # learning rate for discriminator
+        self.g_lr = 0.001   # learning rate for generator
         self.bn_momentum = 0.8
         self.channels = 3
         self.img_shape = (128, 128, self.channels)
@@ -30,7 +31,7 @@ class DCGAN():
         self.base_discriminator = self.build_discriminator()
         self.generator = self.build_generator()
         self.discriminator = keras.models.Model(self.base_discriminator.inputs, self.base_discriminator.outputs)
-        self.discriminator.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.lr),
+        self.discriminator.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.d_lr),
                                    metrics=['accuracy'])
         self.discriminator_frozen = keras.models.Model(self.base_discriminator.inputs, self.base_discriminator.outputs)
         self.discriminator_frozen.trainable = False
@@ -39,7 +40,7 @@ class DCGAN():
         img = self.generator(z)
         score = self.discriminator_frozen(img)
         self.combined = keras.models.Model(z, score)
-        self.combined.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.lr))
+        self.combined.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.g_lr))
 
     def build_discriminator(self):
         """
@@ -236,4 +237,4 @@ if __name__ == '__main__':
     start_epoch = get_last_epoch()
     if start_epoch != -1:
         dcgan.load_model(start_epoch)
-    dcgan.train(start_epoch=start_epoch, end_epoch=100, batch_size=64, save_interval=5, d_train_times=1)
+    dcgan.train(start_epoch=start_epoch, end_epoch=5000, batch_size=64, save_interval=50, d_train_times=1)
