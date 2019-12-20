@@ -115,6 +115,7 @@ class DCGAN():
         fake = np.zeros(shape=(batch_size, 1))
         d_loss_list = []
         g_loss_list = []
+        g_train_times = 1
         for epoch in range(start_epoch + 1, end_epoch + 1):
             start_time = datetime.datetime.now()
             debug('training on epoch ' + str(epoch))
@@ -129,14 +130,26 @@ class DCGAN():
                 d_loss = 0.5 * np.add(d_loss_fake, d_loss_real)
                 debug('d_train iteration: %d  d_loss: %f  d_acc: %f' % (i, d_loss[0], d_loss[1]))
                 d_loss_list.append(d_loss)
+            # Dynamically adjust
+            if d_loss[1] < 0.6:
+                d_train_times += 1
+            else:
+                d_train_times = max(d_train_times//2, 1)
+                
 
-            # Train Generator
-            z = np.random.normal(0, 1, size=(batch_size,) + self.noise_shape)
-            g_loss = self.combined.train_on_batch(z, real)
-            g_loss_list.append(g_loss)
+            if d_loss[1] > 0.985:
+                g_train_times += 1
+            else:
+                g_train_times = max(g_train_times//2, 1)
+            for i in range(g_train_timess):
+                # Train Generator
+                z = np.random.normal(0, 1, size=(batch_size,) + self.noise_shape)
+                g_loss = self.combined.train_on_batch(z, real)
+                g_loss_list.append(g_loss)
+                debug('g_train iteration: %d  g_loss: %f]' %
+                  (i, g_loss))
             time_cost = (datetime.datetime.now()-start_time).total_seconds()
-            debug('finish epoch %d  time_cost: %d  g_loss: %f]' %
-                  (epoch, time_cost, g_loss))
+            debug('finish epoch %d  time_cost: %d' % (epoch, time_cost))
 
             # Save
             if epoch % save_interval == 0:
