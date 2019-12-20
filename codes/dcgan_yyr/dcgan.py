@@ -39,7 +39,8 @@ class DCGAN():
         img = self.generator(z)
         score = self.discriminator_frozen(img)
         self.combined = keras.models.Model(z, score)
-        self.combined.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.g_lr))
+        self.combined.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.g_lr),
+                                metrics=['accuracy'])
 
     def build_discriminator(self):
         """
@@ -119,35 +120,39 @@ class DCGAN():
         for epoch in range(start_epoch + 1, end_epoch + 1):
             start_time = datetime.datetime.now()
             debug('training on epoch ' + str(epoch))
-            for i in range(d_train_times):
-                # Train Discriminator
-                idx = np.random.randint(0, data.shape[0], batch_size)
-                real_imgs = data[idx] + np.random.normal(0, 0.001, self.img_shape)  # 加入噪声
-                z = np.random.normal(0, 1, size=(batch_size,)+self.noise_shape)
-                fake_imgs = self.generator.predict(z)
-                d_loss_real = self.discriminator.train_on_batch(real_imgs, real)
-                d_loss_fake = self.discriminator.train_on_batch(fake_imgs, fake)
-                d_loss = 0.5 * np.add(d_loss_fake, d_loss_real)
-                debug('d_train iteration: %d  d_loss: %f  d_acc: %f' % (i, d_loss[0], d_loss[1]))
-                d_loss_list.append(d_loss)
+            if g_train_times >= 7:
+                pass
+            else:
+                for i in range(d_train_times):
+                    # Train Discriminator
+                    idx = np.random.randint(0, data.shape[0], batch_size)
+                    real_imgs = data[idx] + np.random.normal(0, 0.001, self.img_shape)  # 加入噪声
+                    z = np.random.normal(0, 1, size=(batch_size,)+self.noise_shape)
+                    fake_imgs = self.generator.predict(z)
+                    d_loss_real = self.discriminator.train_on_batch(real_imgs, real)
+                    d_loss_fake = self.discriminator.train_on_batch(fake_imgs, fake)
+                    d_loss = 0.5 * np.add(d_loss_fake, d_loss_real)
+                    debug('d_train iteration: %d  d_loss: %f  d_acc: %f' % (i, d_loss[0], d_loss[1]))
+                    d_loss_list.append(d_loss)
             # Dynamically adjust
             if d_loss[1] < 0.6:
                 d_train_times += 1
             else:
                 d_train_times = max(d_train_times//2, 1)
                 
-
-            if d_loss[1] > 0.985:
-                g_train_times += 1
-            else:
-                g_train_times = max(g_train_times//2, 1)
-            for i in range(g_train_timess):
+            for i in range(g_train_times):
                 # Train Generator
                 z = np.random.normal(0, 1, size=(batch_size,) + self.noise_shape)
                 g_loss = self.combined.train_on_batch(z, real)
                 g_loss_list.append(g_loss)
-                debug('g_train iteration: %d  g_loss: %f]' %
-                  (i, g_loss))
+                debug('g_train iteration: %d  g_loss: %f  g_acc: %f]' %
+                  (i, g_loss[0], g_loss[1]))
+            # Dynamically adjust
+            if g_loss[1] < 0.15:
+                g_train_times += 1
+            else:
+                g_train_times = max(g_train_times//2, 1)
+
             time_cost = (datetime.datetime.now()-start_time).total_seconds()
             debug('finish epoch %d  time_cost: %d' % (epoch, time_cost))
 
@@ -220,7 +225,8 @@ class DCGAN():
         img = self.generator(z)
         score = self.discriminator_frozen(img)
         self.combined = keras.models.Model(z, score)
-        self.combined.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.g_lr))
+        self.combined.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.g_lr),
+                              metrics=['accuracy'])
 
 def filter_save_dir(s):
     """
