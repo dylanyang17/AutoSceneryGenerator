@@ -16,7 +16,6 @@ def debug(s):
     with open(file=log_path, mode='a') as f:
         print(timestamp + s, file=f)
 
-
 class DCGAN():
     def __init__(self):
         self.d_lr = 0.0002  # learning rate for discriminator
@@ -26,7 +25,7 @@ class DCGAN():
         self.img_shape = (128, 128, self.channels)
         self.noise_shape = (100,)
         self.loss_func = 'binary_crossentropy'
-        self.data_path = '../data/pics.npy'
+        self.data_path = '../../data/mountains.npy'
 
         self.base_discriminator = self.build_discriminator()
         self.generator = self.build_generator()
@@ -109,7 +108,7 @@ class DCGAN():
         每一轮选出 batch_size 张图片，每隔 save_interval 轮进行一次保存，注意每一轮中 discriminator 训练 d_train_times 次,
         而 generator 训练 1 次
         """
-        # data 的形状: (number of images, 128, 128, 3)，注意将其变换到 [-1, 1] 上
+        # data 的形状: (number of images, 256, 256, 3)，注意将其变换到 [-1, 1] 上
         data = np.load(self.data_path)
         data = data / 127.5 - 1
         real = np.ones(shape=(batch_size, 1))
@@ -229,7 +228,6 @@ def get_last_epoch():
         epoch = int(name[5:])
         max_epoch = max(epoch, max_epoch)
     return max_epoch
-
 
 if __name__ == '__main__':
     dcgan = DCGAN()
