@@ -19,7 +19,7 @@ def debug(s):
 class DCGAN():
     def __init__(self):
         self.d_lr = 0.0002  # learning rate for discriminator
-        self.g_lr = 0.002   # learning rate for generator
+        self.g_lr = 0.0003   # learning rate for generator
         self.bn_momentum = 0.95
         self.channels = 3
         self.img_shape = (64, 64, self.channels)
@@ -94,7 +94,7 @@ class DCGAN():
         # model.add(keras.layers.Deconv2D(filters=64, kernel_size=5, strides=2, padding='same'))
         # model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Deconv2D(filters=self.channels, kernel_size=5, strides=2, padding='same'))
-        model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
+# model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Activation('tanh'))
         model.add(keras.layers.Reshape(self.img_shape))
 
@@ -121,7 +121,7 @@ class DCGAN():
             for i in range(d_train_times):
                 # Train Discriminator
                 idx = np.random.randint(0, data.shape[0], batch_size)
-                real_imgs = data[idx]
+                real_imgs = data[idx] + np.random.normal(0, 0.001, self.img_shape)  # 加入噪声
                 z = np.random.normal(0, 1, size=(batch_size,)+self.noise_shape)
                 fake_imgs = self.generator.predict(z)
                 d_loss_real = self.discriminator.train_on_batch(real_imgs, real)
