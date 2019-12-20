@@ -19,14 +19,14 @@ def debug(s):
 
 class DCGAN():
     def __init__(self):
-        self.d_lr = 0.0001  # learning rate for discriminator
-        self.g_lr = 0.001   # learning rate for generator
-        self.bn_momentum = 0.8
+        self.d_lr = 0.0002  # learning rate for discriminator
+        self.g_lr = 0.002   # learning rate for generator
+        self.bn_momentum = 0.95
         self.channels = 3
         self.img_shape = (128, 128, self.channels)
         self.noise_shape = (100,)
         self.loss_func = 'binary_crossentropy'
-        self.data_path = '../data128/pics.npy'
+        self.data_path = '../data/pics.npy'
 
         self.base_discriminator = self.build_discriminator()
         self.generator = self.build_generator()
@@ -48,23 +48,23 @@ class DCGAN():
         :return:
         """
         model = keras.models.Sequential()
-        model.add(keras.layers.Conv2D(input_shape=self.img_shape, filters=64, kernel_size=4, strides=2, padding='same'))
+        model.add(keras.layers.Conv2D(input_shape=self.img_shape, filters=64, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.LeakyReLU())
         model.add(keras.layers.Dropout(0.25))
-        model.add(keras.layers.Conv2D(filters=128, kernel_size=4, strides=2, padding='same'))
+        model.add(keras.layers.Conv2D(filters=128, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.LeakyReLU())
         model.add(keras.layers.Dropout(0.25))
-        model.add(keras.layers.Conv2D(filters=256, kernel_size=4, strides=2, padding='same'))
+        model.add(keras.layers.Conv2D(filters=256, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.LeakyReLU())
         model.add(keras.layers.Dropout(0.25))
-        model.add(keras.layers.Conv2D(filters=512, kernel_size=4, strides=2, padding='same'))
+        model.add(keras.layers.Conv2D(filters=512, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.LeakyReLU())
         model.add(keras.layers.Dropout(0.25))
-        model.add(keras.layers.Conv2D(filters=1024, kernel_size=4, strides=2, padding='same'))
+        model.add(keras.layers.Conv2D(filters=1024, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.LeakyReLU())
         model.add(keras.layers.Dropout(0.25))
@@ -83,18 +83,18 @@ class DCGAN():
         model = keras.models.Sequential()
         model.add(keras.layers.Dense(1024*4*4, input_shape=self.noise_shape))
         model.add(keras.layers.Reshape((4, 4, 1024)))
-        model.add(keras.layers.Deconv2D(filters=512, kernel_size=4, strides=2, padding='same'))
+        model.add(keras.layers.Deconv2D(filters=512, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Activation('relu'))
-        model.add(keras.layers.Deconv2D(filters=256, kernel_size=4, strides=2, padding='same'))
+        model.add(keras.layers.Deconv2D(filters=256, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Activation('relu'))
-        model.add(keras.layers.Deconv2D(filters=128, kernel_size=4, strides=2, padding='same'))
+        model.add(keras.layers.Deconv2D(filters=128, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Activation('relu'))
-        model.add(keras.layers.Deconv2D(filters=64, kernel_size=4, strides=2, padding='same'))
+        model.add(keras.layers.Deconv2D(filters=64, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
-        model.add(keras.layers.Deconv2D(filters=self.channels, kernel_size=4, strides=2, padding='same'))
+        model.add(keras.layers.Deconv2D(filters=self.channels, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Activation('tanh'))
         model.add(keras.layers.Reshape(self.img_shape))
@@ -199,7 +199,7 @@ class DCGAN():
         self.generator = keras.models.load_model(os.path.join(save_dir, 'generator'))
         self.base_discriminator = keras.models.load_model(os.path.join(save_dir, 'base_discriminator'))
         self.discriminator = keras.models.Model(self.base_discriminator.inputs, self.base_discriminator.outputs)
-        self.discriminator.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.lr),
+        self.discriminator.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.d_lr),
                                    metrics=['accuracy'])
         self.discriminator_frozen = keras.models.Model(self.base_discriminator.inputs, self.base_discriminator.outputs)
         self.discriminator_frozen.trainable = False
@@ -208,7 +208,7 @@ class DCGAN():
         img = self.generator(z)
         score = self.discriminator_frozen(img)
         self.combined = keras.models.Model(z, score)
-        self.combined.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.lr))
+        self.combined.compile(loss=self.loss_func, optimizer=keras.optimizers.Adam(lr=self.g_lr))
 
 def filter_save_dir(s):
     """
@@ -237,4 +237,4 @@ if __name__ == '__main__':
     start_epoch = get_last_epoch()
     if start_epoch != -1:
         dcgan.load_model(start_epoch)
-    dcgan.train(start_epoch=start_epoch, end_epoch=5000, batch_size=64, save_interval=50, d_train_times=1)
+    dcgan.train(start_epoch=start_epoch, end_epoch=100000, batch_size=64, save_interval=50, d_train_times=1)
