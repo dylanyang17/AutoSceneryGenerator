@@ -22,10 +22,10 @@ class DCGAN():
         self.g_lr = 0.002   # learning rate for generator
         self.bn_momentum = 0.95
         self.channels = 3
-        self.img_shape = (128, 128, self.channels)
+        self.img_shape = (64, 64, self.channels)
         self.noise_shape = (100,)
         self.loss_func = 'binary_crossentropy'
-        self.data_path = '../../data/mountains.npy'
+        self.data_path = '../../data/mountains64.npy'
 
         self.base_discriminator = self.build_discriminator()
         self.generator = self.build_generator()
@@ -47,10 +47,10 @@ class DCGAN():
         :return:
         """
         model = keras.models.Sequential()
-        model.add(keras.layers.Conv2D(input_shape=self.img_shape, filters=64, kernel_size=5, strides=2, padding='same'))
-        model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
-        model.add(keras.layers.LeakyReLU())
-        model.add(keras.layers.Dropout(0.25))
+        # model.add(keras.layers.Conv2D(input_shape=self.img_shape, filters=64, kernel_size=5, strides=2, padding='same'))
+        # model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
+        # model.add(keras.layers.LeakyReLU())
+        # model.add(keras.layers.Dropout(0.25))
         model.add(keras.layers.Conv2D(filters=128, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.LeakyReLU())
@@ -91,8 +91,8 @@ class DCGAN():
         model.add(keras.layers.Deconv2D(filters=128, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Activation('relu'))
-        model.add(keras.layers.Deconv2D(filters=64, kernel_size=5, strides=2, padding='same'))
-        model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
+        # model.add(keras.layers.Deconv2D(filters=64, kernel_size=5, strides=2, padding='same'))
+        # model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Deconv2D(filters=self.channels, kernel_size=5, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Activation('tanh'))
