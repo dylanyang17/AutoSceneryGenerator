@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 from functools import reduce
 import os
@@ -181,6 +183,24 @@ class WGAN():
         fig.savefig(os.path.join(save_dir, 'img.png'))
         plt.close()
 
+    def choose_best_generated_images(self, sample_num, top_num):
+        """
+        采样 sample_num 张图片, 并且返回最好的 top_num 张
+        :return: numpy数组, 形状为 (top_num, self.image_shape[0], self.image_shape[1], self.image_shape[2])
+        """
+        sample_list = []
+        z = np.random.normal(0, 1, size=(sample_num,)+self.noise_shape)
+        img = np.array(self.generator.predict(z))
+        score = np.array(self.discriminator.predict(img))
+        for i in range(len(img)):
+            sample_list.append([img[i], score[i]])
+        # sample_list.sort(key=lambda x: abs(x[1] + 1))
+        sample_list.sort(key=lambda x: x[1])
+        sample_list = sample_list[:top_num]
+        for i in range(len(sample_list)):
+            print(sample_list[i][1])
+            sample_list[i] = sample_list[i][0]
+        return np.array(sample_list)
 
     def save_model(self, epoch):
         """
