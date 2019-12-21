@@ -102,7 +102,7 @@ class DCGAN(object):
                     else:
                         img = img.resize(
                             (self.output_height, self.output_width))
-                        img = np.array(img)
+                    img = np.array(img)
                     if img.shape == (self.output_height,  self.output_width, 3):
                         self.data.append(img)
             except:
