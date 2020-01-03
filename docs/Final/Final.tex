@@ -72,11 +72,15 @@
 
 \section{引言}
 
-我们一开始希望构建一个神经网络以及一些简单的界面，可以根据用户提供的一些特征的比例，自动生成一张风景图片。
+  我们一开始希望构建一个神经网络以及一些简单的界面，可以根据用户提供的一些特征的比例，自动生成一张尽可能真实且清晰的风景图片。首先在利用已有知识的情况下，我们尝试了使用 autoEncoder，但是即便是在经过多次调整尝试之后，效果仍然很不理想。在经过文献查阅之后，我们决定尝试使用生成对抗网络（Generative Adversarial Networks, GAN）[1] 来解决问题，并且为了提高清晰度使用了 stackGAN [4, 8, 9]对已生成的低清晰度图片进行再次对抗生成，以得到更高清的图片。接下来我们还参考了 Radford 等与 DCGAN 相关的工作[5]，向网络中添加了卷积层，并进行了若干优化。
+
+  尽管使用 DCGAN，加上一些训练技巧并且小心调参的情况下，已经能够得到不错的结果，但训练的稳定性问题一直没有得到解决。一方面，我们尝试了设计一个自适应的算法来自动调整训练过程，在尽可能小的影响训练质量的情况下，矫正训练中出现的过度不均衡的情况；另一方面，我们参考了 Arjovsky 等与 Wasserstein GAN 相关的工作 [11, 12]，并且尝试使用其中的 EM 距离，结合之前实现的 DCGAN 来解决问题。尽管这样有效提高了训练的稳定性，但由于 WGAN 在对每一层的网络参数调整上过于简单地使用 weight clipping，导致我们尝试用更深层的网络生成更高清的图片时出现了梯度消失的问题。
+
+  最终，由于 WGAN 实际产生图片的效果同 DCGAN 差不多，而 DCGAN 在使用一定训练技巧的情况下已经能够比较稳定地产生较为优质且高清的图片，我们还是决定使用 DCGAN 作为了最终的网络方案，并且在各个数据集上进行了测试。另外对于我们一开始的目标——用户的比例选择以及界面等，在 GAN 的训练难度本身就很高的情况下已经没有足够的时间完成，但我们仍参阅了一些相关的文献 [2, 6]，并大致有了一些解决方案。总之，虽然一开始的目标没有完成，但是我们确实已经向它迈进了一大步，并获得了足够的收获和成果。
 
 \section{相关工作}
 
-自从 2014 年 Ian Goodfellow 等 [1] 设计出了生成对抗网络（Generative Adversarial Networks, GAN）起，各种 GAN 便开始出现，其中最常见的一种应用便是生成图像。
+自从 2014 年 Ian Goodfellow 等 [1] 设计出了起，各种 GAN 便开始出现，其中最常见的一种应用便是生成图像。
 
 \section{方法}
 
@@ -100,7 +104,7 @@
 
 [TODO：这部分需要指标结果]
 
-在分工上，陶天骅同学在整体上对本次课题进行了方向规划和指导，收集了山、鸟、猫、狗、森林、湖等数据集并进行图片的 resize 处理，并对 AutoEncoder、朴素GAN、DCGAN、StackGAN、ResNet、VAE 等进行了尝试，并加入了 [TODO：使用的指标]，另外撰写了中期报告和展示 PPT 的大部分内容。杨雅儒同学收集了 Kaggle 上的风景数据集，并独立尝试了对 DCGAN 的搭建和调参，设计了自适应算法来稳定 DCGAN 的训练，在参阅文献发现不稳定的本质原因之后，尝试更换训练目标，使用 WGAN 来进行训练，另外撰写了终期报告的大部分内容 [TODO：也不一定?]。
+在分工上，陶天骅同学在整体上对本次课题进行了方向规划和指导，收集了山、鸟、猫、狗、森林、湖等数据集并进行图片的 resize 处理，并对 AutoEncoder、朴素GAN、DCGAN、StackGAN、ResNet、VAE 等进行了尝试，并加入了 [TODO：使用的指标]，另外撰写了中期报告和展示 PPT 的大部分内容。杨雅儒同学收集了 Kaggle 上的风景数据集，并独立尝试了对 DCGAN 的搭建和调参，设计了自适应算法来稳定 DCGAN 的训练，在参阅文献发现不稳定的本质原因之后，尝试更换训练目标，使用 WGAN 来进行训练，另外撰写了终期报告的大部分内容 [TODO：也不一定? 以及是否有补充?]。
 
 \section*{参考文献}
 
@@ -108,7 +112,7 @@
 
 [1] Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza , et al. Generative Adversarial Networks[J]. 2014.
 
-[2] Karras, Tero, Laine, Samuli, Aila, Timo. A Style-Based Generator Architecture for Generative Adversarial Networks[J].
+[2] Karras, Tero, Laine, Samuli, Aila, Timo. A Style-Based Generator Architecture for Generative Adversarial Networks[J]. 2019
 
 [3] M. Heusel, H. Ramsauer, T. Unterthiner, B. Nessler, and S. Hochreiter. GANs trained by a two time-scale update rule converge to a local Nash equilibrium. In Proc. NIPS, pages 6626–6637, 2017.
 
@@ -126,7 +130,9 @@
 
 [10] Diederik P Kingma, Max Welling. Auto-Encoding Variational Bayes[J]. 2014
 
-[11] Tero Karras, Samuli Laine, Timo Aila. A Style-Based Generator Architecture for Generative Adversarial Networks[J]. 2019
+[11] Arjovsky M , Bottou, Léon. Towards Principled Methods for Training Generative Adversarial Networks[J]. Stat, 2017.
+
+[12] Martin Arjovsky, Soumith Chintala, Léon Bottou. Wasserstein GAN[J]. 2017.
 
 \end{CJK*}
 \end{document}
