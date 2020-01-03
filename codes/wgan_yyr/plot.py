@@ -31,9 +31,9 @@ if __name__ == '__main__':
     epoch = int(sys.argv[1])
     wgan = WGAN()
     wgan.load_model(epoch)
-    r = 2
-    c = 2
-    samples = wgan.choose_best_generated_images(500, r * c)
+    r = 3
+    c = 3
+    samples = wgan.choose_best_generated_images(100, r * c)
     plot(samples, r, c)
 
 

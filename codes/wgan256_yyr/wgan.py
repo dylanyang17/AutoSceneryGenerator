@@ -18,15 +18,15 @@ def debug(s):
 
 class WGAN():
     def __init__(self):
-        self.bn_momentum = 0.85
+        self.bn_momentum = 0.95
         self.channels = 3
-        self.img_shape = (64, 64, self.channels)
+        self.img_shape = (256, 256, self.channels)
         self.noise_shape = (100,)
 
-        self.d_train_times = 10
-        self.clip_value = 0.01
-        self.optimizer = keras.optimizers.RMSprop(lr=0.00001)
-        self.data_path = '../../data/mountains64.npy'
+        self.d_train_times = 6
+        self.clip_value = 0.1
+        self.optimizer = keras.optimizers.RMSprop(lr=0.0000001)
+        self.data_path = '../../data/mountains256.npy'
 
         self.base_discriminator = self.build_discriminator()
         self.generator = self.build_generator()
@@ -52,26 +52,30 @@ class WGAN():
         :return:
         """
         model = keras.models.Sequential()
-        # model.add(keras.layers.Conv2D(input_shape=self.img_shape, filters=64, kernel_size=7, strides=2, padding='same'))
-        # model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
-        # model.add(keras.layers.LeakyReLU())
-        # model.add(keras.layers.Dropout(0.25))
-        model.add(keras.layers.Conv2D(filters=128, kernel_size=7, strides=2, padding='same'))
+        model.add(keras.layers.Conv2D(input_shape=self.img_shape, filters=32, kernel_size=3, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.LeakyReLU())
-        model.add(keras.layers.Dropout(0.25))
-        model.add(keras.layers.Conv2D(filters=256, kernel_size=7, strides=2, padding='same'))
+        model.add(keras.layers.Dropout(0.1))
+        model.add(keras.layers.Conv2D(filters=64, kernel_size=3, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.LeakyReLU())
-        model.add(keras.layers.Dropout(0.25))
-        model.add(keras.layers.Conv2D(filters=512, kernel_size=7, strides=2, padding='same'))
+        model.add(keras.layers.Dropout(0.1))
+        model.add(keras.layers.Conv2D(filters=128, kernel_size=3, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.LeakyReLU())
-        model.add(keras.layers.Dropout(0.25))
-        model.add(keras.layers.Conv2D(filters=1024, kernel_size=7, strides=2, padding='same'))
+        model.add(keras.layers.Dropout(0.1))
+        model.add(keras.layers.Conv2D(filters=256, kernel_size=3, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.LeakyReLU())
-        model.add(keras.layers.Dropout(0.25))
+        model.add(keras.layers.Dropout(0.1))
+        model.add(keras.layers.Conv2D(filters=512, kernel_size=3, strides=2, padding='same'))
+        model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
+        model.add(keras.layers.LeakyReLU())
+        model.add(keras.layers.Dropout(0.1))
+        model.add(keras.layers.Conv2D(filters=1024, kernel_size=3, strides=2, padding='same'))
+        model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
+        model.add(keras.layers.LeakyReLU())
+        model.add(keras.layers.Dropout(0.1))
         model.add(keras.layers.Flatten())
         model.add(keras.layers.Dense(1))  # 不加Activation
 
@@ -87,18 +91,21 @@ class WGAN():
         model = keras.models.Sequential()
         model.add(keras.layers.Dense(1024*4*4, input_shape=self.noise_shape))
         model.add(keras.layers.Reshape((4, 4, 1024)))
-        model.add(keras.layers.Deconv2D(filters=1024, kernel_size=7, strides=2, padding='same'))
+        model.add(keras.layers.Deconv2D(filters=1024, kernel_size=3, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Activation('relu'))
-        model.add(keras.layers.Deconv2D(filters=512, kernel_size=7, strides=2, padding='same'))
+        model.add(keras.layers.Deconv2D(filters=512, kernel_size=3, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Activation('relu'))
-        model.add(keras.layers.Deconv2D(filters=256, kernel_size=7, strides=2, padding='same'))
+        model.add(keras.layers.Deconv2D(filters=256, kernel_size=3, strides=2, padding='same'))
         model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
         model.add(keras.layers.Activation('relu'))
-        # model.add(keras.layers.Deconv2D(filters=128, kernel_size=7, strides=2, padding='same'))
-        # model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
-        model.add(keras.layers.Deconv2D(filters=self.channels, kernel_size=7, strides=2, padding='same'))
+        model.add(keras.layers.Deconv2D(filters=128, kernel_size=3, strides=2, padding='same'))
+        model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
+        model.add(keras.layers.Activation('relu'))
+        model.add(keras.layers.Deconv2D(filters=64, kernel_size=3, strides=2, padding='same'))
+        model.add(keras.layers.BatchNormalization(momentum=self.bn_momentum))
+        model.add(keras.layers.Deconv2D(filters=self.channels, kernel_size=3, strides=2, padding='same'))
         model.add(keras.layers.Activation('tanh'))
         model.add(keras.layers.Reshape(self.img_shape))
 
@@ -115,7 +122,7 @@ class WGAN():
         # data 的形状: (number of images, 256, 256, 3)，注意将其变换到 [-1, 1] 上
         data = np.load(self.data_path)
         data = data / 127.5 - 1
-        real = -np.ones(shape=(batch_size, 1))    # 注意仍然是 1 表示正例，这里只是因为相距越远越好
+        real = -np.ones(shape=(batch_size, 1))
         fake = np.ones(shape=(batch_size, 1))
         d_loss_list = []
         g_loss_list = []
@@ -130,12 +137,12 @@ class WGAN():
                 fake_imgs = self.generator.predict(z)
                 d_out_real = np.array(self.discriminator.predict(real_imgs))
                 d_out_fake = np.array(self.discriminator.predict(fake_imgs))
-                d_acc_real = sum(abs(d_out_real-fake) < abs(d_out_real-real)) / len(d_out_real)
-                d_acc_fake = sum(abs(d_out_fake-real) < abs(d_out_fake-fake)) / len(d_out_fake)
+                d_acc_real = sum(abs(d_out_real-real) < abs(d_out_real-fake)) / len(d_out_real)
+                d_acc_fake = sum(abs(d_out_fake-fake) < abs(d_out_fake-real)) / len(d_out_fake)
                 d_loss_real = self.discriminator.train_on_batch(real_imgs, real)
                 d_loss_fake = self.discriminator.train_on_batch(fake_imgs, fake)
                 d_loss = 0.5 * np.add(d_loss_fake, d_loss_real)
-                debug('D:: d_train iteration: %d  d_loss: %f  d_acc_real: %f  d_acc_fake: %f' % (i, d_loss[0], d_acc_real, d_acc_fake))
+                debug('D:: d_train iteration: %d  d_loss: %f  d_acc_real: %f  d_acc_fake: %f  sample_out_real: %f  sample_out_fake: %f' % (i, d_loss[0], d_acc_real, d_acc_fake, d_out_real[0], d_out_fake[0]))
                 d_loss_list.append(d_loss)
 
                 # Clip
@@ -146,7 +153,7 @@ class WGAN():
 
             # Train Generator
             g_out = self.combined.predict(z)
-            g_acc = sum(abs(g_out - fake) < abs(g_out - real)) / len(g_out)
+            g_acc = sum(abs(g_out - real) < abs(g_out - fake)) / len(g_out)
             g_loss = self.combined.train_on_batch(z, real)
             g_loss_list.append(g_loss)
             debug('G:: g_loss: %f  g_acc: %f]' %
@@ -159,24 +166,6 @@ class WGAN():
             if epoch % save_interval == 0:
                 self.save_model(epoch)
                 self.save_imgs(epoch)
-
-    def choose_best_generated_images(self, sample_num, top_num):
-        """
-        生成sample_num张图片, 返回其中最好的 top_num 张
-        :return: numpy.array 类型, 形状为 (top_num,) + self.img_shape
-        """
-        z = np.random.normal(0, 1, (sample_num,) + self.noise_shape)
-        samples = np.array(self.generator.predict(z))
-        score = np.array(self.discriminator.predict(samples))
-        sample_list = []
-        for i in range(len(samples)):
-            sample_list.append([samples[i], score[i]])
-        sample_list.sort(key=lambda x: x[1], reverse=True)
-        sample_list = sample_list[:top_num]
-        for i in range(len(sample_list)):
-            print(sample_list[i][1])
-            sample_list[i] = sample_list[i][0]
-        return np.array(sample_list)
 
     def save_imgs(self, epoch):
         """
@@ -271,4 +260,4 @@ if __name__ == '__main__':
     start_epoch = get_last_epoch()
     if start_epoch != -1:
         wgan.load_model(start_epoch)
-    wgan.train(start_epoch=start_epoch, end_epoch=500000, batch_size=64, save_interval=500)
+    wgan.train(start_epoch=start_epoch, end_epoch=50000, batch_size=64, save_interval=5)

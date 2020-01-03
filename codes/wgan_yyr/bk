@@ -160,24 +160,6 @@ class WGAN():
                 self.save_model(epoch)
                 self.save_imgs(epoch)
 
-    def choose_best_generated_images(self, sample_num, top_num):
-        """
-        生成sample_num张图片, 返回其中最好的 top_num 张
-        :return: numpy.array 类型, 形状为 (top_num,) + self.img_shape
-        """
-        z = np.random.normal(0, 1, (sample_num,) + self.noise_shape)
-        samples = np.array(self.generator.predict(z))
-        score = np.array(self.discriminator.predict(samples))
-        sample_list = []
-        for i in range(len(samples)):
-            sample_list.append([samples[i], score[i]])
-        sample_list.sort(key=lambda x: x[1], reverse=True)
-        sample_list = sample_list[:top_num]
-        for i in range(len(sample_list)):
-            print(sample_list[i][1])
-            sample_list[i] = sample_list[i][0]
-        return np.array(sample_list)
-
     def save_imgs(self, epoch):
         """
         保存第 epoch 轮生成的图片

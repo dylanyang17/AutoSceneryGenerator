@@ -8,3 +8,9 @@
 2019-12-22 03:18:33:: load model, epoch: 8000
 2019-12-22 03:21:42:: load model, epoch: 8000
 2019-12-22 03:24:35:: load model, epoch: 8000
+2019-12-22 05:26:48:: load model, epoch: 8000
+2019-12-22 05:31:33:: load model, epoch: 8000
+2019-12-22 05:34:01:: load model, epoch: 8000
+2019-12-22 05:37:09:: load model, epoch: 8000
+2019-12-28 22:21:51:: load model, epoch: 70000
+2019-12-28 22:28:25:: load model, epoch: 70000
