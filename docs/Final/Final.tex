@@ -66,17 +66,17 @@
 
 \begin{abstract}
 
-本课题希望构建一个神经网络，用于自动生成尽可能真实的风景图片。我们分别对AutoEncoder、GAN、DCGAN、WGAN、StackGAN等诸多方案进行了尝试和对比，尽可能提高训练的稳定性，并最终在采用 DCGAN 的网络下得到了较好的结果。
+本课题尝试构建一个神经网络，用于自动生成尽可能真实的风景图片。我们分别对AutoEncoder、GAN、DCGAN、WGAN、StackGAN等诸多方案进行了尝试和对比，尽可能提高训练的稳定性，并最终在采用 DCGAN 的网络下得到了较好的结果。
 
 \end{abstract}
 
 \section{引言}
 
-引言
+我们一开始希望构建一个神经网络以及一些简单的界面，可以根据用户提供的一些特征的比例，自动生成一张风景图片。
 
 \section{相关工作}
 
-相关工作
+自从 2014 年 Ian Goodfellow 等 [1] 设计出了生成对抗网络（Generative Adversarial Networks, GAN）起，各种 GAN 便开始出现，其中最常见的一种应用便是生成图像。
 
 \section{方法}
 
@@ -84,7 +84,15 @@
 
 \section{实验}
 
-实验
+  \subsection{数据集}
+
+  \subsection{参数设置}
+
+  \subsection{baseline模型}
+
+  \subsection{实验结果与分析}
+
+  [TODO: 注意需要提供量化数值分析]
 
 \section{结论}
 
@@ -92,21 +100,33 @@
 
 [TODO：这部分需要指标结果]
 
-在分工上，陶天骅同学在整体上对本次课题进行了方向规划和指导，收集了山、鸟、猫、狗等数据集并进行图片的 resize 处理，并对 AutoEncoder、朴素GAN、DCGAN、StackGAN、ResNet、VAE 等进行了尝试，并加入了 [TODO：使用的指标]，另外撰写了中期报告和展示 PPT 的大部分内容。杨雅儒同学收集了 Kaggle 上的风景数据集，并独立尝试了对 DCGAN 的搭建和调参，设计了自适应算法来稳定 DCGAN 的训练，在参阅文献发现不稳定的本质原因之后，尝试更换训练目标，使用 WGAN 来进行训练，另外撰写了终期报告的大部分内容 [TODO：也不一定]。
+在分工上，陶天骅同学在整体上对本次课题进行了方向规划和指导，收集了山、鸟、猫、狗、森林、湖等数据集并进行图片的 resize 处理，并对 AutoEncoder、朴素GAN、DCGAN、StackGAN、ResNet、VAE 等进行了尝试，并加入了 [TODO：使用的指标]，另外撰写了中期报告和展示 PPT 的大部分内容。杨雅儒同学收集了 Kaggle 上的风景数据集，并独立尝试了对 DCGAN 的搭建和调参，设计了自适应算法来稳定 DCGAN 的训练，在参阅文献发现不稳定的本质原因之后，尝试更换训练目标，使用 WGAN 来进行训练，另外撰写了终期报告的大部分内容 [TODO：也不一定?]。
 
 \section*{参考文献}
 
 \small
 
-[1] Karras, Tero, Laine, Samuli, Aila, Timo. A Style-Based Generator Architecture for Generative Adversarial Networks[J].
+[1] Ian J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza , et al. Generative Adversarial Networks[J]. 2014.
 
-[2] M. Heusel, H. Ramsauer, T. Unterthiner, B. Nessler, and S. Hochreiter. GANs trained by a two time-scale update rule converge to a local Nash equilibrium. In Proc. NIPS, pages 6626–6637, 2017.
+[2] Karras, Tero, Laine, Samuli, Aila, Timo. A Style-Based Generator Architecture for Generative Adversarial Networks[J].
 
-[3] Zhang H , Xu T , Li H , et al. StackGAN: Text to Photo-realistic Image Synthesis with Stacked Generative Adversarial Networks[J]. 2016.
+[3] M. Heusel, H. Ramsauer, T. Unterthiner, B. Nessler, and S. Hochreiter. GANs trained by a two time-scale update rule converge to a local Nash equilibrium. In Proc. NIPS, pages 6626–6637, 2017.
 
-[4] A. Radford, L. Metz, S. Chintala. Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks[J]. 2016.
+[4] Zhang H , Xu T , Li H , et al. StackGAN: Text to Photo-realistic Image Synthesis with Stacked Generative Adversarial Networks[J]. 2016.
 
-[5] M. Mirza, S. Osindero. Conditional Generative Adversarial Nets[J]. 2014.
+[5] A. Radford, L. Metz, S. Chintala. Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks[J]. 2016.
+
+[6] M. Mirza, S. Osindero. Conditional Generative Adversarial Nets[J]. 2014.
+
+[7] Heusel M , Ramsauer H , Unterthiner T , et al. GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium[J]. 2017.
+
+[8] Zhang H , Xu T , Li H , et al. StackGAN: Text to Photo-realistic Image Synthesis with Stacked Generative Adversarial Networks[J]. 2016.
+
+[9] Han Z , Tao X , Hongsheng L , et al. StackGAN++: Realistic Image Synthesis with Stacked Generative Adversarial Networks[J]. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2018:1-1.
+
+[10] Diederik P Kingma, Max Welling. Auto-Encoding Variational Bayes[J]. 2014
+
+[11] Tero Karras, Samuli Laine, Timo Aila. A Style-Based Generator Architecture for Generative Adversarial Networks[J]. 2019
 
 \end{CJK*}
 \end{document}
