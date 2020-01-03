@@ -43,7 +43,7 @@ class DCGAN(object):
         self.d_first_channel_count = d_first_channel_count
         self.color_channel = color_channel
         self.batch_size = batch_size
-        self.sample_num = 64
+        self.sample_num = sample_num
         self.z_dim = z_dim
         self.dataset_name = dataset_name
         self.max_to_keep = max_to_keep
@@ -54,10 +54,12 @@ class DCGAN(object):
         self.d_bn1 = batch_norm(name='d_bn1')
         self.d_bn2 = batch_norm(name='d_bn2')
         self.d_bn3 = batch_norm(name='d_bn3')
+        self.d_bn4 = batch_norm(name='d_bn4')
         self.g_bn0 = batch_norm(name='g_bn0')
         self.g_bn1 = batch_norm(name='g_bn1')
         self.g_bn2 = batch_norm(name='g_bn2')
         self.g_bn3 = batch_norm(name='g_bn3')
+        self.g_bn4 = batch_norm(name='g_bn4')
         self.build_model()
 
     def build_model(self):
@@ -79,8 +81,10 @@ class DCGAN(object):
             tf.nn.sigmoid_cross_entropy_with_logits(logits=self.D_real_logits, labels=tf.ones_like(self.D_real)))
         self.d_loss_fake = tf.reduce_mean(
             tf.nn.sigmoid_cross_entropy_with_logits(logits=self.D_fake_logits, labels=tf.zeros_like(self.D_fake)))
-        self.g_loss = tf.reduce_mean(
-            tf.nn.sigmoid_cross_entropy_with_logits(logits=self.D_fake_logits, labels=tf.ones_like(self.D_fake)))
+        self.g_loss_sep = tf.nn.sigmoid_cross_entropy_with_logits(
+            logits=self.D_fake_logits, labels=tf.ones_like(self.D_fake))
+        self.g_loss = tf.reduce_mean(self.g_loss_sep
+                                     )
         self.d_loss = self.d_loss_real + self.d_loss_fake
         train_vars = tf.trainable_variables()
         self.d_vars = [var for var in train_vars if 'd_' in var.name]
@@ -125,6 +129,11 @@ class DCGAN(object):
         sample_data = self.data[0:self.sample_num]
         counter = 1
         start_time = time.time()
+
+        suss, old_counter = self.load(self.checkpoint_dir)
+        if suss:
+            counter = old_counter
+
         for epoch in xrange(config.epoch):
             np.random.shuffle(self.data)
             batch_idxs = len(self.data) // config.batch_size
@@ -181,16 +190,20 @@ class DCGAN(object):
                 conv2d(out1, self.d_first_channel_count*4, name='d_layer2_conv')))
             out3 = lrelu(self.d_bn3(
                 conv2d(out2, self.d_first_channel_count*8, name='d_layer3_conv')))
-            out4, _, _ = linear(tf.reshape(
-                out3, [self.batch_size, -1]), 1, 'd_layer4_linear')
+            out4 = lrelu(self.d_bn4(
+                conv2d(out3, self.d_first_channel_count*16, name='d_layer4_conv')))
+            out5, _, _ = linear(tf.reshape(
+                out4, [self.batch_size, -1]), 1, 'd_layer5_linear')
 
-            return tf.nn.sigmoid(out4), out4
+            return tf.nn.sigmoid(out5), out5
 
     def generator(self, z, is_train=True):
         with tf.variable_scope("generator") as scope:
             if not is_train:
                 scope.reuse_variables()
-            s_h16, s_w16 = self.output_height, self.output_width
+            s_h32, s_w32 = self.output_height, self.output_width
+            s_h16, s_w16 = conv_out_size_with_same_padding(
+                s_h32, 2), conv_out_size_with_same_padding(s_w32, 2)
             s_h8, s_w8 = conv_out_size_with_same_padding(
                 s_h16, 2), conv_out_size_with_same_padding(s_w16, 2)
             s_h4, s_w4 = conv_out_size_with_same_padding(
@@ -201,27 +214,31 @@ class DCGAN(object):
                 s_h2, 2), conv_out_size_with_same_padding(s_w2, 2)
 
             self.z_, self.layer0_weight, self.layer0_bias = linear(
-                z, self.g_last_channel_count*8*s_h*s_w, 'g_layer0_linear')
+                z, self.g_last_channel_count*16*s_h*s_w, 'g_layer0_linear')
             self.out0 = tf.reshape(
-                self.z_, [-1, s_h, s_w, self.g_last_channel_count * 8])
+                self.z_, [-1, s_h, s_w, self.g_last_channel_count * 16])
             out0 = tf.nn.relu(self.g_bn0(self.out0, train=is_train))
 
             self.out1, self.layer1_weight, self.layer1_bias = conv2d_transpose(
-                out0, [self.batch_size, s_h2, s_w2, self.g_last_channel_count*4], name='g_layer1', )
+                out0, [self.batch_size, s_h2, s_w2, self.g_last_channel_count*8], name='g_layer1', )
             out1 = tf.nn.relu(self.g_bn1(self.out1, train=is_train))
 
             out2, self.layer2_weight, self.layer2_bias = conv2d_transpose(
-                out1, [self.batch_size, s_h4, s_w4, self.g_last_channel_count*2], name='g_layer2')
+                out1, [self.batch_size, s_h4, s_w4, self.g_last_channel_count*4], name='g_layer2')
             out2 = tf.nn.relu(self.g_bn2(out2, train=is_train))
 
             out3, self.layer3_weight, self.layer3_bias = conv2d_transpose(
-                out2, [self.batch_size, s_h8, s_w8, self.g_last_channel_count*1], name='g_layer3')
+                out2, [self.batch_size, s_h8, s_w8, self.g_last_channel_count*2], name='g_layer3')
             out3 = tf.nn.relu(self.g_bn3(out3, train=is_train))
 
             out4, self.layer4_weight, self.layer4_bias = conv2d_transpose(
-                out3, [self.batch_size, s_h16, s_w16, self.color_channel], name='g_layer4')
+                out3, [self.batch_size, s_h16, s_w16, self.g_last_channel_count*1], name='g_layer4')
+            out4 = tf.nn.relu(self.g_bn4(out4, train=is_train))
 
-        return tf.nn.tanh(out4)
+            out5, self.layer5_weight, self.layer5_bias = conv2d_transpose(
+                out4, [self.batch_size, s_h32, s_w32, self.color_channel], name='g_layer5')
+
+        return tf.nn.tanh(out5)
 
     def save(self, checkpoint_dir, step, filename='model', ckpt=True):
         if not os.path.exists(checkpoint_dir):
@@ -232,7 +249,47 @@ class DCGAN(object):
                             global_step=step)
 
     def load(self, checkpoint_dir):
-        pass
+        ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
+        if ckpt and ckpt.model_checkpoint_path:
+            ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
+            self.saver.restore(self.sess, os.path.join(
+                checkpoint_dir, ckpt_name))
+            counter = int(ckpt_name.split('-')[-1])
+            print("{} loaded".format(ckpt_name))
+            return True, counter
+        else:
+            print("Cannot load {}".format(checkpoint_dir))
+            return False, 0
+
+    def evaluate(self, config, sampleCnt=8):
+        _, counter = self.load(self.checkpoint_dir)
+        all_samples = []
+        all_loss = []
+        for i in range(sampleCnt*sampleCnt*1):
+            print('processing {}/{}'.format(i+1, sampleCnt*sampleCnt*1))
+            sample_z = generate_latent_points(
+                self.z_dim, self.sample_num)
+            samples, g_loss = self.sess.run(
+                [self.sampler, self.g_loss_sep],
+                feed_dict={
+                    self.z: sample_z,
+                },
+            )
+            idx = np.argsort(g_loss.reshape((g_loss.shape[0],)))[:self.sample_num//2]   #32
+            half = np.take(samples, idx, axis=0)
+            for a in half:
+                all_samples.append(a.tolist())
+            half = np.take(g_loss, idx, axis=0)
+            for a in half:
+                all_loss.append(a.tolist())
+        all_samples = np.array(all_samples)
+        all_loss = np.array(all_loss)
+        
+        idx = np.argsort(all_loss.reshape((all_loss.shape[0],)))[:sampleCnt*sampleCnt]
+        
+        sample_selected = np.take(all_samples, idx, axis=0)
+        save_images(sample_selected,
+                    './{}/selected-{}.png'.format(config.sample_dir, counter))
 
 
 def conv2d(inputx, filters, kernel_height=5, kernel_width=5, stride_h=2, stride_w=2, stddev=0.02, name="conv2d"):

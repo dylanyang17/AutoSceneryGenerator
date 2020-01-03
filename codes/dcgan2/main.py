@@ -6,6 +6,7 @@ flags = tf.app.flags
 flags.DEFINE_integer("epoch", 800, "Epoch")
 flags.DEFINE_float("learning_rate", 0.0002, "Learning rate")
 flags.DEFINE_integer("batch_size", 64, "Batch size")
+# flags.DEFINE_integer("sample_num", 256, "Sample size")
 flags.DEFINE_string("dataset", "mountains", "The name of dataset")
 flags.DEFINE_string("data_dir", "./data", "path to datasets")
 flags.DEFINE_integer("z_dim", 100, "dimensions of z")
@@ -21,10 +22,10 @@ flags.DEFINE_integer("output_width", None, "If None, same value as output_height
 flags.DEFINE_string("out_dir", "./out", "Directory for outputs ")
 flags.DEFINE_float("beta1", 0.5, "Momentum")
 flags.DEFINE_string("out_name", "", "")
-
+flags.DEFINE_boolean("train" ,True, "Train")
 FLAGS = flags.FLAGS
 
-# os.environ["CUDA_VISIBLE_DEVICES"]="0"
+# os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
 
 def main(_):
@@ -32,7 +33,9 @@ def main(_):
     if FLAGS.output_height is None: FLAGS.output_height = FLAGS.input_height
     if FLAGS.input_width is None: FLAGS.input_width =   FLAGS.input_height
     if FLAGS.output_width is None: FLAGS.output_width = FLAGS.output_height
-    FLAGS.out_name = '{}-{}x{}'.format(FLAGS.dataset, FLAGS.output_height,FLAGS.output_width)
+    FLAGS.out_name = '{}-{}x{}-bn{}'.format(FLAGS.dataset, FLAGS.output_height,FLAGS.output_width,FLAGS.batch_size)
+    # FLAGS.out_name = '{}-{}x{}'.format(FLAGS.dataset, FLAGS.output_height,FLAGS.output_width)
+
     FLAGS.out_dir = os.path.join(FLAGS.out_dir, FLAGS.out_name)
     FLAGS.checkpoint_dir = os.path.join(FLAGS.out_dir, FLAGS.checkpoint_dir)
     FLAGS.sample_dir = os.path.join(FLAGS.out_dir, FLAGS.sample_dir)
@@ -57,7 +60,11 @@ def main(_):
           data_dir=FLAGS.data_dir,
           out_dir=FLAGS.out_dir,
           max_to_keep=FLAGS.max_to_keep)
-        dcgan.train(FLAGS)
+        if FLAGS.train:
+          dcgan.train(FLAGS)
+        else:
+          dcgan.evaluate(FLAGS)
+
     
 if __name__ == "__main__":
     tf.app.run()
