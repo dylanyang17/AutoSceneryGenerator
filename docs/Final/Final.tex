@@ -27,6 +27,7 @@
 \usepackage{microtype}      % microtypography
 \usepackage{graphicx}
 \usepackage{CJKutf8}
+\usepackage{amsfonts,amssymb,amsmath}
 
 
 \title{《人工神经网络》大作业终期报告}
@@ -82,11 +83,41 @@
 
   自从 2014 年 Ian Goodfellow 等 [1] 设计出了起，各种各样的 GAN 变种便开始出现，研究者们在不断尝试提高 GAN 质量的同时，也尝试着将 GAN 应用于各种各样的场合。在应用方面，最常见的一种应用便是生成图像，除了本文中比较直接的生成图像方法以外，还有加入一些条件或风格的生成图像 [2, 6] 的 CGAN 和 StyleGAN 等，也可以用 CGAN 来做有监督的图像到图像的生成，而 [13, 14] 中的 CycleGAN 和 DualGAN 还能做到无监督的图像到图像生成，这些可以应用到风格转换等。另外还有例如 [4] 中做的文本到图像的生成等。
 
-  而在质量提高方面，又可粗略地分为两部分，一是提高训练的稳定性，二是提高生成图像的质量。在稳定性提高上本文主要参考了 [11, 12]，在 [11] 中 Arjovsky 等尝试了研究 GAN 训练不稳定的本质原因，即当 Discriminator 训练过优时将导致 Generator 的训练出现梯度消失。之后又在 [12] 中提出了 WGAN，使用 EM 距离替代原本的 JS 散度，使得在 Discriminator 训练得越好的情况下，Generator 训练的效果也越好。不过正如引言中所述的，WGAN 过于简单地使用 weight clipping 导致出现一些问题，于是 Gulrajani 等又提出了改进之后的 WGAN-GP [15]，使用梯度惩罚来代替简单的 weight clipping，实现了更好的效果。在提高生成图像质量上，本文主要考虑到的是图片的清晰度，而 stackGAN [4, 8, 9] 的相关工作便利用分层的思想，逐步提高生成的图片尺寸，以达到生成高清图片的目的。当然还有一些更加强大的 GAN 模型，但由于受算力和时间等限制，本课题便没有对其深入研究。
+  而在质量提高方面，又可粗略地分为两部分，一是提高训练的稳定性，二是提高生成图像的质量。在稳定性提高上本文主要参考了 [11, 12]，在 [11] 中 Arjovsky 等尝试了研究 GAN 训练不稳定的本质原因，即当 Discriminator 训练过优时将导致 Generator 的训练出现梯度消失。之后又在 [12] 中提出了 WGAN，使用 EM 距离替代原本的 JS 散度，使得在 Discriminator 训练得越好的情况下，Generator 训练的效果也越好。不过正如引言中所述的，WGAN 过于简单地使用 weight clipping 导致出现一些问题，于是 Gulrajani 等又提出了改进之后的 WGAN-GP [15]，使用梯度惩罚来代替简单的 weight clipping，实现了更好的效果。在提高生成图像质量上，本文主要考虑到的是图片的清晰度，而 StackGAN [4, 8, 9] 的相关工作便利用分层的思想，逐步提高生成的图片尺寸，以达到生成高清图片的目的。当然还有一些更加强大的 GAN 模型，但由于受算力和时间等限制，本课题便没有对其深入研究。
 
 \section{方法}
 
-方法
+  \subsection{训练目标}
+
+    对于我们使用的 GAN、DCGAN 以及 StackGAN，用 D 表示判别器（discriminator），G 表示生成器（generator），训练目标如下：
+
+    \begin{equation}
+      \min_G\max_D V(D, G) = \mathbb{E}_{x\sim p_{data}(x)}[\log D(x)] + \mathbb{E}_{z\sim p_z(z)}[log(1-D(G(z)))].
+    \end{equation}
+    
+    根据 [11] 的推导，上面右式在最优判别器 $D^*$ 下，实际上有：
+    
+    \begin{equation}
+    \begin{aligned}
+	  &\mathbb{E}_{x\sim p_{data}(x)}[\log D^*(x)] + \mathbb{E}_{z\sim p_z(z)}[log(1-D^*(G(z)))] \\
+	  = &\mathbb{E}_{x\sim P_r}[\log D^*(x)] + \mathbb{E}_{x\sim P_g}[log(1-D^*(x))] \\
+	  = &2JS(p_{data} || p_{gen}) - 2\log 2
+	\end{aligned}
+    \end{equation}
+
+	而 Earth-Mover (EM) 距离定义如下：
+	
+	\begin{equation}
+	  W(P_r, P_g) = \inf_{\gamma \sim \Pi(P_r, P_g)} \mathbb{E}_{(x, y) \sim \gamma}[||x-y||]
+	\end{equation}
+	
+	使用 EM 距离而不是 JS 散度的优点即，即便两个分布没有重叠，EM 距离仍然能够反映它们的远近关系，而 JS 散度并不能做到这一点。再利用 [12] 的思路和数学推导，我们便可以得到具体的网络形式。
+	
+  \subsection{title}
+
+
+
+  
 
 \section{实验}
 
@@ -106,7 +137,7 @@
 
 [TODO：这部分需要指标结果]
 
-在分工上，陶天骅同学在整体上对本次课题进行了方向规划和指导，收集了山、鸟、猫、狗、森林、湖等数据集并进行图片的 resize 处理，并对 AutoEncoder、朴素GAN、DCGAN、StackGAN 等分别进行了尝试，并加入了 [TODO：使用的指标，以及有无工作补充?]。杨雅儒同学收集了 Kaggle 上的风景数据集，并独立进行了对 DCGAN 的搭建和调参，设计了一个自适应算法，并尝试对其改进来稳定 DCGAN 的训练，在参阅文献发现不稳定的本质原因之后，进行了一定的推导验证并尝试更换训练目标以使用 WGAN 来进行训练。另外报告由两人合作分工撰写。
+  在分工上，陶天骅同学在整体上对本次课题进行了方向规划和指导，收集了山、鸟、猫、狗、森林、湖等数据集并进行图片的 resize 处理，并对 AutoEncoder、朴素GAN、DCGAN、StackGAN 等分别进行了尝试，并加入了 Inception Score 对最终网络进行评价 [TODO: 有无工作补充?]。杨雅儒同学收集了 Kaggle 上的风景数据集，并独立进行了对 DCGAN 的搭建和调参，设计了一个自适应算法，并尝试对其改进来稳定 DCGAN 的训练，在参阅文献发现不稳定的本质原因之后，进行了一定的推导验证并尝试更换训练目标以使用 WGAN 来进行训练。文档方面，陶天骅同学撰写了中期报告和展示PPT的大部分内容，杨雅儒同学撰写了结题报告的大部分内容。
 
 \section*{参考文献}
 
@@ -132,9 +163,9 @@
 
 [10] Diederik P Kingma, Max Welling. Auto-Encoding Variational Bayes[J]. 2014
 
-[11] Arjovsky M , Bottou, Léon. Towards Principled Methods for Training Generative Adversarial Networks[J]. Stat, 2017.
+[11] Arjovsky M , Bottou, L\'{e}on. Towards Principled Methods for Training Generative Adversarial Networks[J]. Stat, 2017.
 
-[12] Martin Arjovsky, Soumith Chintala, Léon Bottou. Wasserstein GAN[J]. 2017.
+[12] Martin Arjovsky, Soumith Chintala, L\'{e}on Bottou. Wasserstein GAN[J]. 2017.
 
 [13] Jun-Yan Zhu, Taesung Park, Phillip Isola, Alexei A. Efros. Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks[J]. 2018.
 
