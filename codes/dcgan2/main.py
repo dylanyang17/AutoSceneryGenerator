@@ -1,5 +1,8 @@
-import tensorflow as tf
 import os
+# os.environ["CUDA_VISIBLE_DEVICES"]="1"
+
+import tensorflow as tf
+
 from model import DCGAN
 
 flags = tf.app.flags
@@ -17,15 +20,15 @@ flags.DEFINE_string("checkpoint_dir", "checkpoint", "Checkpoint dir")
 flags.DEFINE_string("sample_dir", "samples", "Sample dir")
 flags.DEFINE_integer("input_height", 256, "Input height")
 flags.DEFINE_integer("input_width", None, "If None, same value as input_height")
-flags.DEFINE_integer("output_height", 64, "Output height")
+flags.DEFINE_integer("output_height", 128, "Output height")
 flags.DEFINE_integer("output_width", None, "If None, same value as output_height")
 flags.DEFINE_string("out_dir", "./out", "Directory for outputs ")
 flags.DEFINE_float("beta1", 0.5, "Momentum")
 flags.DEFINE_string("out_name", "", "")
-flags.DEFINE_boolean("train" ,True, "Train")
+flags.DEFINE_boolean("train" ,True , "Train")
 FLAGS = flags.FLAGS
 
-# os.environ["CUDA_VISIBLE_DEVICES"]="1"
+
 
 
 def main(_):
@@ -63,6 +66,7 @@ def main(_):
         if FLAGS.train:
           dcgan.train(FLAGS)
         else:
+          # dcgan.genPics(FLAGS)
           dcgan.evaluate(FLAGS)
 
     

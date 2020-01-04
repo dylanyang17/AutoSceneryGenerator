@@ -8,7 +8,7 @@ from PIL import Image
 from plot import merge
 from matplotlib import pyplot as plt
 import scipy
-
+from inception_score.model import get_inception_score
 
 def generate_latent_points(latent_dim, n_samples):
     x = np.random.uniform(-1, 1, (n_samples, latent_dim))
@@ -261,7 +261,7 @@ class DCGAN(object):
             print("Cannot load {}".format(checkpoint_dir))
             return False, 0
 
-    def evaluate(self, config, sampleCnt=8):
+    def genPics(self, config, sampleCnt=8):
         _, counter = self.load(self.checkpoint_dir)
         all_samples = []
         all_loss = []
@@ -290,6 +290,44 @@ class DCGAN(object):
         sample_selected = np.take(all_samples, idx, axis=0)
         save_images(sample_selected,
                     './{}/selected-{}.png'.format(config.sample_dir, counter))
+
+    def evaluate(self, config):
+        _, counter = self.load(self.checkpoint_dir)
+        images = []
+        
+        for i in range(10000//self.sample_num):
+            print('processing {}/{}'.format(i+1, 10000//self.sample_num))
+            sample_z = generate_latent_points(
+                self.z_dim, self.sample_num)
+            samples, g_loss = self.sess.run(
+                [self.sampler, self.g_loss_sep],
+                feed_dict={
+                    self.z: sample_z,
+                },
+            )
+            for a in samples:
+                ax = (a + 1) / 2.0* 255
+                images.append(ax)
+            
+        
+        result = get_inception_score(images)
+        print (result)
+
+        # self.prepare_data(config=config)
+        # images =[]
+        # for a in self.data:
+        #     ax = (a + 1) / 2.0* 255
+        #     images.append(ax)
+        # result = get_inception_score(images)
+        # print (result)
+
+        
+        # images =[]
+        # for i in range(1000):
+        #     images.append(np.ones((128,128,3))*100)
+        # result = get_inception_score(images)
+        # print (result)
+    
 
 
 def conv2d(inputx, filters, kernel_height=5, kernel_width=5, stride_h=2, stride_w=2, stddev=0.02, name="conv2d"):
