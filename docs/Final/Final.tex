@@ -185,13 +185,13 @@
 		\end{center}
 	\end{table}
 
-	\ref{fig_bird} 展示出了部分数据集的一些例子。
+	图片\ref{fig_mountains} 展示出了部分数据集的一些例子。
 	
 	\begin{figure}[htbp]
 		\begin{minipage}{0.5\linewidth}
-			\label{fig_bird}
-			\centering\includegraphics[scale=0.15]{res/bird.png}
-			\caption{Some pictures in bird datasets}
+			\label{fig_mountains}
+			\centering\includegraphics[scale=0.22]{res/mountain_datasets.png}
+			\caption{Some pictures in mountains datasets}
 		\end{minipage}
 		\begin{minipage}{0.5\linewidth}
 			\label{fig_landscape}
@@ -238,20 +238,119 @@
 
 	我们以文献 [1] 中的 GAN 作为 baseline。
 	
-	[TODO: 如何比较？]  
+	在 [1] 中，作者用GAN实现了一些简单的图片生成工作，有基于全连接的和基于卷积操作的。
+
+	\begin{figure}[htbp]
+		\begin{minipage}{0.5\linewidth}
+			\label{m1}
+			\centering\includegraphics[scale=0.35]{res/base.png}
+			\caption{Figure in [1]}
+		\end{minipage}
+	\end{figure}
+
+	我们希望生成较高清一些的图，分辨率达到128x128或者256x256，同时所使用的计算资源尽量少。
 
   \subsection{实验结果与分析}
 
+	我们在mountians数据集上做了比较完整的实验，生成了较为清晰的64/128/256分辨率的山的图片。
 	
-  [TODO: 注意需要提供量化数值分析]
+	但是在landscape数据集上训练的结果则没有前者好，这可能是因为数据集的内容比较杂、数量大，还混入了一些干扰图片。
+
+	\begin{figure}[htbp]
+		\begin{minipage}{0.5\linewidth}
+			\label{m1}
+			\centering\includegraphics[scale=0.35]{res/mountain-64-4conv-105400.png}
+			\caption{mountains, 64x64, 4convT, 105400 iterations}
+		\end{minipage}
+		\begin{minipage}{0.5\linewidth}
+			\label{m2}
+			\centering\includegraphics[scale=0.35]{res/mountain-128-5conv-17200.png}
+			\caption{mountains, 128x128, 5convT, 17200 iterations}
+		\end{minipage}
+		\begin{minipage}{0.5\linewidth}
+			\label{m3}
+			\centering\includegraphics[scale=0.35]{res/mountain-256-5conv-28800.png}
+			\caption{mountains, 256x256, 5convT, 28800 iterations}
+		\end{minipage}
+		\begin{minipage}{0.5\linewidth}
+			\label{l1}
+			\centering\includegraphics[scale=0.3]{res/selected.png}
+			\caption{landscape, 64x64, 5convT, 38000 iterations}
+		\end{minipage}
+	\end{figure}
+
+	\begin{figure}[htbp]
+		\begin{minipage}{0.5\linewidth}
+			\label{d1}
+			\centering\includegraphics[scale=0.25]{res/mountain_detail.png}
+			\caption{some details}
+		\end{minipage}
+		\begin{minipage}{0.5\linewidth}
+			\label{d2}
+			\centering\includegraphics[scale=0.35]{res/mountain_detail2.png}
+			\caption{some details}
+		\end{minipage}
+	\end{figure}
+
+	我们的模型是通用的，不只可以生成风景图片，也可以在任意的数据集上训练。我们尝试了一些其他数据集，但训练时间都比较短，且只使用了有4个convT的模型。
+
+	\begin{figure}[htbp]
+		\begin{minipage}{0.5\linewidth}
+			\label{bi}
+			\centering\includegraphics[scale=0.35]{res/bird_gen.png}
+			\caption{birds, 64x64, 4convT}
+		\end{minipage}
+		\begin{minipage}{0.5\linewidth}
+			\label{do}
+			\centering\includegraphics[scale=0.35]{res/dog.png}
+			\caption{dog, 64x64, 4convT}
+		\end{minipage}
+		\begin{minipage}{0.5\linewidth}
+			\label{ca}
+			\centering\includegraphics[scale=0.35]{res/cat.png}
+			\caption{cat, 64x64, 4convT}
+		\end{minipage}
+		\begin{minipage}{0.5\linewidth}
+			\label{la}
+			\centering\includegraphics[scale=0.37]{res/lake_38000.png}
+			\caption{lake, 64x64, 5convT}
+		\end{minipage}
+	\end{figure}
+	
+  	我们在训练的模型上测试了Inception Score，结果如 \ref{table_score} 所示。测试都是使用了5xConvT的模型，一些没有测的用/表示。
+
+	\begin{table}[!h]
+   		\label{table_score}
+   		\begin{center}
+   			\begin{tabular}{|c|c|c|c|c|}
+   				\hline
+ 				          & datasets & 5xConvT-64x64 & 5xConvT-128x128 &5xConvT-256x256\\
+				\hline
+   				landscape & 5.07 ± 0.51 & 2.99 ± 0.04 & 3.02 ± 0.06& / \\
+   				\hline
+   				mountains & 2.37 ± 0.17 & 2.24 ± 0.01 & 2.19 ± 0.01 & 1.99 ± 0.02\\
+				\hline
+				lake & 2.977 ± 0.25 & 2.04 ± 0.02 & / & /\\
+				\hline
+				dog & 12.58 ± 0.19 & 4.54 ± 0.10 & / & /\\
+				\hline
+				cat & 3.62 ± 0.09 & 2.69 ± 0.04 & / & /\\
+   				\hline
+   			\end{tabular}
+   			\vspace{10pt}
+   			\caption{Inception Score.}
+   		\end{center}
+   	\end{table}
+
+	mountians数据集上是几个中最好的，模型的Inception Score与原数据集上的比较接近。
 
 \section{结论}
 
 在本次课题中，经过对不同模型在生成图片上的研究，以及对参数的不断调整和试验，我们发现在较为朴素的 DCGAN 上加上一些训练技巧便已经可以达到较好的水准。
 
-[TODO：这部分需要指标结果]
+例如在mountians数据集上，生成128x128的图片Inception Score可以达到2.24，与原数据集的2.37比较接近。
 
-  在分工上，陶天骅同学在整体上对本次课题进行了方向规划和指导，收集了山、鸟、猫、狗、森林、湖等数据集并进行图片的 resize 处理，并对 AutoEncoder、朴素GAN、DCGAN、StackGAN 等分别进行了尝试，并加入了 Inception Score 对最终网络进行评价 [TODO: 有无工作补充?]。杨雅儒同学收集了 Kaggle 上的风景数据集，并独立进行了对 DCGAN 的搭建和调参，设计了一个自适应算法，并尝试对其改进来稳定 DCGAN 的训练，在参阅文献发现不稳定的本质原因之后，进行了一定的推导验证并尝试更换训练目标以使用 WGAN 来进行训练。文档方面，陶天骅同学撰写了中期报告和展示PPT的大部分内容，杨雅儒同学撰写了结题报告的大部分内容。
+  在分工上，陶天骅同学在整体上对本次课题进行了方向规划和指导，收集了山、鸟、猫、狗、森林、湖等数据集并进行图片的 resize 处理，并对 AutoEncoder、朴素GAN、DCGAN、StackGAN 等分别进行了尝试，最终选定基于DCGAN的模型，搭建了各有5个卷积和转置卷积层的模型，并加入了 Inception Score 对最终网络进行评价。杨雅儒同学收集了 Kaggle 上的风景数据集，并独立进行了对 DCGAN 的搭建和调参，设计了一个自适应算法，并尝试对其改进来稳定 DCGAN 的训练，在参阅文献发现不稳定的本质原因之后，进行了一定的推导验证并尝试更换训练目标以使用 WGAN 来进行训练。文档方面，陶天骅同学撰写了中期报告和展示PPT的大部分内容，杨雅儒同学撰写了结题报告的大部分内容。
 
 \section*{参考文献}
 
