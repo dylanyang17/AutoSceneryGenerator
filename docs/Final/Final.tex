@@ -88,14 +88,20 @@
 \section{方法}
 
   \subsection{训练目标}
+  
+	 \subsubsection{DCGAN}
 
-    对于我们使用的 GAN、DCGAN 以及 StackGAN，用 D 表示判别器（discriminator），G 表示生成器（generator），训练目标如下：
-
-    \begin{equation}
-      \min_G\max_D V(D, G) = \mathbb{E}_{x\sim p_{data}(x)}[\log D(x)] + \mathbb{E}_{z\sim p_z(z)}[log(1-D(G(z)))].
-    \end{equation}
+	 对于我们使用的 GAN、DCGAN 以及 StackGAN，用 D 表示判别器（discriminator），G 表示生成器（generator），训练目标如下：
+	
+	 \begin{equation}
+	   \min_G\max_D V(D, G) = \mathbb{E}_{x\sim p_{data}(x)}[\log D(x)] + \mathbb{E}_{z\sim p_z(z)}[log(1-D(G(z)))].
+	 \end{equation}
+	 
+	 于是考虑分别构建 D、G 两部分网络，并且进行轮流训练，在训练 D 和 G 时都分别需要固定另一方的网络。
     
-    根据 [11] 的推导，上面右式在最优判别器 $D^*$ 下，实际上有：
+    \subsubsection{WGAN}
+   
+    根据 [11] 的推导，式(1)在最优判别器 $D^*$ 下，实际上有：
     
     \begin{equation}
     \begin{aligned}
@@ -111,24 +117,94 @@
 	  W(P_r, P_g) = \inf_{\gamma \sim \Pi(P_r, P_g)} \mathbb{E}_{(x, y) \sim \gamma}[||x-y||]
 	\end{equation}
 	
-	使用 EM 距离而不是 JS 散度的优点即，即便两个分布没有重叠，EM 距离仍然能够反映它们的远近关系，而 JS 散度并不能做到这一点。再利用 [12] 的思路和数学推导，我们便可以得到具体的网络形式。
+	使用 EM 距离而不是 JS 散度的优点即，即便两个分布没有重叠，EM 距离仍然能够反映它们的远近关系，而 JS 散度并不能做到这一点。再利用 [12] 的思路和数学推导，我们便可以得到 WGAN 具体的网络形式。
 	
-  \subsection{title}
-
-
-
+  \subsection{DCGAN 模型}
   
+	整体分为两部分，Generator 部分和 Discriminator 部分，可以参考 Figure 1, 2，参数和尺寸在图中标注。
+	
+	\begin{figure}[htbp]
+		\begin{minipage}{0.5\linewidth}
+			\centering\includegraphics[scale=0.13]{res/DCGAN_generator.png}
+			\caption{The model of generator in DCGAN.}
+		\end{minipage}
+		\begin{minipage}{0.5\linewidth}
+			\centering\includegraphics[scale=0.13]{res/DCGAN_discriminator.png}
+			\caption{The model of discriminator in DCGAN.}
+		\end{minipage}
+	\end{figure}
+	
+	在 Generator 中，除了最后一层以 tanh 作为激活函数以外，其它层均以 relu 作为激活函数；在 Discriminator 中，除了最后一层以 sigmoid 作为激活函数以外，其它层均以 leakyRelu 作为激活函数。最终的 loss 采用交叉熵误差函数。
+	
+  
+  \subsection{WGAN 模型}
+
+	在 DCGAN 模型的基础上，为每一层的参数增加了 clipping，并且删去了 Discriminator 最后的激活函数。另外在每一个conv/deconv层之后加入了 BatchNormalization，并在 Discriminator 的每一个卷积层激活之后加入了 Dropout 层。
+
+	\begin{figure}[htbp]
+		\begin{minipage}{0.5\linewidth}
+			\centering\includegraphics[scale=0.13]{res/WGAN_generator.png}
+			\caption{The model of generator in WGAN.}
+		\end{minipage}
+		\begin{minipage}{0.5\linewidth}
+			\centering\includegraphics[scale=0.13]{res/WGAN_discriminator.png}
+			\caption{The model of discriminator in WGAN.}
+		\end{minipage}
+	\end{figure}
+  
+	并且使用如下 loss，将其称为 Wasserstein Loss：
+	
+	\begin{equation}
+		loss = \frac{1}{L} \Sigma_{i=1}^L y_{label} * y_{pred} 
+	\end{equation}
+	
+	其中 $y_{label}$ 表示实际是否为真实图片，$y_{pred}$ 表示 Discriminator 的输出结果。
 
 \section{实验}
 
-  \subsection{数据集}
+  由于最终我们的 WGAN 并没有在尺寸更大的图片中取得很好的结果，在本课题中仅作为一个稳定性优化方向给出，更具有理论意义。所以为了减少冗余，在实验部分就省去了 WGAN 相关的实验信息，而仅以在大尺寸图片中表现仍旧较好的 DCGAN 作为最终网络，给出具体实验信息。
 
+  \subsection{数据集}
+	我们使用了六组数据集，详细见下表格，并且对于每一组数据集进行了resize，分为 64*64, 128*128, 256*256，分别进行训练。数据大多由我们自行爬取和整理，可以在如下链接中下载： cloud.tsinghua.edu.cn/d/c00d7f1e66914948937e/。
+	
+	\begin{table}[htbp]
+		\begin{center}
+			\begin{tabular}{|c|c|c|c|c|c|c|}
+				\hline
+				Name	  & landscape	& mountains	& birds & lake  & dog   & cat \\
+				\hline
+				Pictures  &	61132		& 14090     & 11788 & 13840 & 12462 & 12467   \\
+				\hline
+			\end{tabular}
+			\vspace{10pt}
+			\caption{The name and number of pictures of the datasets.}
+		\end{center}
+	\end{table}
+
+	这里展示出部分数据集的一些例子。
+	
+	\begin{figure}[htbp]
+		\begin{minipage}{0.5\linewidth}
+			\centering\includegraphics[scale=0.15]{res/bird.png}
+			\caption{Some pictures in bird datasets}
+		\end{minipage}
+		\begin{minipage}{0.5\linewidth}
+			\centering\includegraphics[scale=0.15]{res/landscape.png}
+			\caption{Some pictures in landscape datasets}
+		\end{minipage}
+	\end{figure}
+	
+	
   \subsection{参数设置}
+    
 
   \subsection{baseline模型}
 
+	我们以文献        
+
   \subsection{实验结果与分析}
 
+	
   [TODO: 注意需要提供量化数值分析]
 
 \section{结论}
