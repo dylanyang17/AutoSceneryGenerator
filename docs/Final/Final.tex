@@ -121,10 +121,11 @@
 	
   \subsection{DCGAN 模型}
   
-	整体分为两部分，Generator 部分和 Discriminator 部分，可以参考 Figure 1, 2，参数和尺寸在图中标注。
+	整体分为两部分，Generator 部分和 Discriminator 部分，参数和尺寸在图 \ref{fig_dcgan_model} 中标注。
 	
 	\begin{figure}[htbp]
 		\begin{minipage}{0.5\linewidth}
+			\label{fig_dcgan_model}
 			\centering\includegraphics[scale=0.13]{res/DCGAN_generator.png}
 			\caption{The model of generator in DCGAN.}
 		\end{minipage}
@@ -136,13 +137,16 @@
 	
 	在 Generator 中，除了最后一层以 tanh 作为激活函数以外，其它层均以 relu 作为激活函数；在 Discriminator 中，除了最后一层以 sigmoid 作为激活函数以外，其它层均以 leakyRelu 作为激活函数。最终的 loss 采用交叉熵误差函数。
 	
+	另外在训练过程进行之前，首先需要对数据图片进行值域调整，将其线性调整为 [-1, 1] 范围内的 float 类型即可。
+	
   
   \subsection{WGAN 模型}
 
-	在 DCGAN 模型的基础上，为每一层的参数增加了 clipping，并且删去了 Discriminator 最后的激活函数。另外在每一个conv/deconv层之后加入了 BatchNormalization，并在 Discriminator 的每一个卷积层激活之后加入了 Dropout 层。
+	在 DCGAN 模型的基础上，为每一层的参数增加了 clipping，并且删去了 Discriminator 最后的激活函数。另外在每一个conv/deconv层之后加入了 BatchNormalization，并在 Discriminator 的每一个卷积层激活之后加入了 Dropout 层。模型图可见 \ref{fig_wgan_model}。
 
 	\begin{figure}[htbp]
 		\begin{minipage}{0.5\linewidth}
+			\label{fig_wgan_model}
 			\centering\includegraphics[scale=0.13]{res/WGAN_generator.png}
 			\caption{The model of generator in WGAN.}
 		\end{minipage}
@@ -181,14 +185,16 @@
 		\end{center}
 	\end{table}
 
-	这里展示出部分数据集的一些例子。
+	\ref{fig_bird} 展示出了部分数据集的一些例子。
 	
 	\begin{figure}[htbp]
 		\begin{minipage}{0.5\linewidth}
+			\label{fig_bird}
 			\centering\includegraphics[scale=0.15]{res/bird.png}
 			\caption{Some pictures in bird datasets}
 		\end{minipage}
 		\begin{minipage}{0.5\linewidth}
+			\label{fig_landscape}
 			\centering\includegraphics[scale=0.15]{res/landscape.png}
 			\caption{Some pictures in landscape datasets}
 		\end{minipage}
@@ -197,10 +203,42 @@
 	
   \subsection{参数设置}
     
+    参数设置在 \ref{table_parameters} 中给出，其中 output height 和 output width 中的 64/128/256 表示任选其一，会直接导致生成图片的尺寸不同。
+    
+   	\begin{table}[!h]
+   		\label{table_parameters}
+   		\begin{center}
+   			\begin{tabular}{|c|c|c|c|}
+   				\hline
+   				Name	               & 	Type	&		Value		& 		Description \\
+   				\hline
+   				input height           &	Integer	&       256         &       The height of images in datasets    \\
+   				\hline
+   				input width            &	Integer	&       256         &       The width of images in datasets    \\
+   				\hline
+   				output height          &	Integer	&       64/128/256  &       The height of images generated    \\
+   				\hline
+   				output width           &	Integer	&       64/128/256  &       The width of images generated    \\
+   				\hline
+   				beta                   &	Float	&       0.5         &       Momentum    \\
+   				\hline
+   				z\_dim                 &	Integer	&       100         &       The number of noise's dimensions    \\
+   				\hline
+   				batch size             &	Integer	&       64          &       The size of each batch    \\
+   				\hline
+   				learning rate          &	float	&       0.0002      &       Learning rate    \\
+   				\hline
+   			\end{tabular}
+   			\vspace{10pt}
+   			\caption{The details of parameters.}
+   		\end{center}
+   	\end{table}
 
   \subsection{baseline模型}
 
-	我们以文献        
+	我们以文献 [1] 中的 GAN 作为 baseline。
+	
+	[TODO: 如何比较？]  
 
   \subsection{实验结果与分析}
 
